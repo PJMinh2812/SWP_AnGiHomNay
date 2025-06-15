@@ -1,10 +1,10 @@
--- Create Roles Table
+-- 1. Roles Table
 CREATE TABLE Roles (
 RoleID INT PRIMARY KEY IDENTITY(1,1),
 RoleName NVARCHAR(100) NOT NULL UNIQUE
 );
 
--- Create Users Table
+-- 2. Users Table
 CREATE TABLE Users (
 UserID INT PRIMARY KEY IDENTITY(1,1),
 Email NVARCHAR(255) NOT NULL UNIQUE,
@@ -15,32 +15,37 @@ Status NVARCHAR(50),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create UserRole Table
+-- 3. UserRole Table
 CREATE TABLE UserRole (
 UserRoleID INT PRIMARY KEY IDENTITY(1,1),
 UserID INT FOREIGN KEY REFERENCES Users(UserID),
 RoleID INT FOREIGN KEY REFERENCES Roles(RoleID)
 );
 
--- Create Functions Table
+-- 4. Functions Table
 CREATE TABLE Functions (
 FunctionID INT PRIMARY KEY IDENTITY(1,1),
 FunctionName NVARCHAR(255) NOT NULL,
 Description NVARCHAR(500)
 );
 
--- Create AccessControl Table
+-- 5. AccessControl Table
 CREATE TABLE AccessControl (
 AccessID INT PRIMARY KEY IDENTITY(1,1),
 RoleID INT FOREIGN KEY REFERENCES Roles(RoleID),
 FunctionID INT FOREIGN KEY REFERENCES Functions(FunctionID)
 );
 
--- Create Foods Table
+-- 6. Categories Table
+CREATE TABLE Categories (
+CategoryID INT PRIMARY KEY IDENTITY(1,1),
+CategoryName NVARCHAR(100) NOT NULL UNIQUE
+);
+
+-- 7. Foods Table
 CREATE TABLE Foods (
 FoodID INT PRIMARY KEY IDENTITY(1,1),
 Name NVARCHAR(255) NOT NULL,
-Category NVARCHAR(100),
 Description NVARCHAR(MAX),
 FoodImage NVARCHAR(255),
 Calories INT,
@@ -53,7 +58,14 @@ Status NVARCHAR(50),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Recipes Table
+-- 8. FoodCategories Table (Many-to-Many between Foods and Categories)
+CREATE TABLE FoodCategories (
+FoodID INT FOREIGN KEY REFERENCES Foods(FoodID),
+CategoryID INT FOREIGN KEY REFERENCES Categories(CategoryID),
+PRIMARY KEY (FoodID, CategoryID)
+);
+
+-- 9. Recipes Table
 CREATE TABLE Recipes (
 RecipeID INT PRIMARY KEY IDENTITY(1,1),
 FoodID INT FOREIGN KEY REFERENCES Foods(FoodID),
@@ -66,7 +78,7 @@ Status NVARCHAR(50),
 UserID INT FOREIGN KEY REFERENCES Users(UserID)
 );
 
--- Create Recipe Ratings Table
+-- 10. RecipeRatings Table
 CREATE TABLE RecipeRatings (
 RatingID INT PRIMARY KEY IDENTITY(1,1),
 RecipeID INT FOREIGN KEY REFERENCES Recipes(RecipeID),
@@ -75,7 +87,7 @@ RatingValue INT CHECK (RatingValue BETWEEN 1 AND 5),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Food Ratings Table
+-- 11. FoodRatings Table
 CREATE TABLE FoodRatings (
 RatingID INT PRIMARY KEY IDENTITY(1,1),
 FoodID INT FOREIGN KEY REFERENCES Foods(FoodID),
@@ -84,7 +96,7 @@ RatingValue INT CHECK (RatingValue BETWEEN 1 AND 5),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Recipe Comments Table
+-- 12. RecipeComments Table
 CREATE TABLE RecipeComments (
 CommentID INT PRIMARY KEY IDENTITY(1,1),
 RecipeID INT FOREIGN KEY REFERENCES Recipes(RecipeID),
@@ -93,7 +105,7 @@ Content NVARCHAR(MAX),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Food Comments Table
+-- 13. FoodComments Table
 CREATE TABLE FoodComments (
 CommentID INT PRIMARY KEY IDENTITY(1,1),
 FoodID INT FOREIGN KEY REFERENCES Foods(FoodID),
@@ -102,7 +114,7 @@ Content NVARCHAR(MAX),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create ChatMessages Table
+-- 14. ChatMessages Table
 CREATE TABLE ChatMessages (
 ChatID INT PRIMARY KEY IDENTITY(1,1),
 SenderID INT FOREIGN KEY REFERENCES Users(UserID),
@@ -111,7 +123,7 @@ Message NVARCHAR(MAX),
 SentAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Subscriptions Table
+-- 15. Subscriptions Table
 CREATE TABLE Subscriptions (
 SubscriptionID INT PRIMARY KEY IDENTITY(1,1),
 UserID INT FOREIGN KEY REFERENCES Users(UserID),
@@ -122,7 +134,7 @@ EndDate DATETIME,
 IsActive BIT
 );
 
--- Create GroceryLists Table
+-- 16. GroceryLists Table
 CREATE TABLE GroceryLists (
 ListID INT PRIMARY KEY IDENTITY(1,1),
 UserID INT FOREIGN KEY REFERENCES Users(UserID),
@@ -130,7 +142,7 @@ Title NVARCHAR(255),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- GroceryListItems Table (with Serving Calculation)
+-- 17. GroceryListItems Table
 CREATE TABLE GroceryListItems (
 ItemID INT PRIMARY KEY IDENTITY(1,1),
 ListID INT FOREIGN KEY REFERENCES GroceryLists(ListID),
@@ -142,7 +154,7 @@ CalculatedAmount DECIMAL(10,2),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Combined Favorites Table
+-- 18. Favorites Table
 CREATE TABLE Favorites (
 FavoriteID INT PRIMARY KEY IDENTITY(1,1),
 UserID INT FOREIGN KEY REFERENCES Users(UserID),
@@ -156,7 +168,7 @@ CHECK (
 )
 );
 
--- Create Reports Table
+-- 19. Reports Table
 CREATE TABLE Reports (
 ReportID INT PRIMARY KEY IDENTITY(1,1),
 RecipeID INT FOREIGN KEY REFERENCES Recipes(RecipeID),
@@ -165,7 +177,7 @@ Reason NVARCHAR(MAX),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Notifications Table
+-- 20. Notifications Table
 CREATE TABLE Notifications (
 NotificationID INT PRIMARY KEY IDENTITY(1,1),
 UserID INT FOREIGN KEY REFERENCES Users(UserID),
@@ -173,7 +185,7 @@ Message NVARCHAR(MAX),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create AIsuggestions Table (linked to Food)
+-- 21. AIsuggestions Table
 CREATE TABLE AIsuggestions (
 SuggestionID INT PRIMARY KEY IDENTITY(1,1),
 FoodID INT FOREIGN KEY REFERENCES Foods(FoodID),
@@ -181,7 +193,7 @@ SuggestionText NVARCHAR(MAX),
 CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Payments Table
+-- 22. Payments Table
 CREATE TABLE Payments (
 PaymentID INT PRIMARY KEY IDENTITY(1,1),
 UserID INT FOREIGN KEY REFERENCES Users(UserID),
@@ -190,7 +202,7 @@ PaymentMethod NVARCHAR(100),
 PaidAt DATETIME DEFAULT GETDATE()
 );
 
--- Create CalorieTracking Table
+-- 23. CalorieTracking Table
 CREATE TABLE CalorieTracking (
 TrackID INT PRIMARY KEY IDENTITY(1,1),
 UserID INT FOREIGN KEY REFERENCES Users(UserID),
@@ -199,7 +211,7 @@ EstimatedServing NVARCHAR(100),
 TrackedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create ServingCalculations Table
+-- 24. ServingCalculations Table
 CREATE TABLE ServingCalculations (
 CalcID INT PRIMARY KEY IDENTITY(1,1),
 RecipeID INT FOREIGN KEY REFERENCES Recipes(RecipeID),
@@ -208,7 +220,7 @@ CalculatedServing NVARCHAR(100),
 CalculatedAt DATETIME DEFAULT GETDATE()
 );
 
--- Create Wheelspin Table
+-- 25. Wheelspin Table
 CREATE TABLE Wheelspin (
 SpinID INT PRIMARY KEY IDENTITY(1,1),
 UserID INT FOREIGN KEY REFERENCES Users(UserID),
