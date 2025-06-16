@@ -3,7 +3,13 @@
     Created on : Jun 14, 2025, 3:28:38 PM
     Author     : Admin
 --%>
+<%@ page import= "model.Users"%> 
+<%@ page import="java.util.List" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
 
+<%
+    List<Users> users = (List<Users>) request.getAttribute("users"); 
+%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="vi">
@@ -11,11 +17,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thực đơn & Dinh dưỡng - AnGiHomNay</title>
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/home.css">
-    <link rel="stylesheet" href="../css/search.css">
-    <link rel="stylesheet" href="../css/nutrition.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/main.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/header.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/home.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/search.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/nutrition.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -30,7 +36,7 @@
                     <li><a href="index.html">Trang chủ</a></li>
                     <li><a href="random.html">Quay món</a></li>
                     <li><a href="trending.html">Món hot</a></li>
-                    <li><a href="nutrition.html" class="active">Thực đơn & Dinh dưỡng</a></li>
+                    <li><a href="nutrition.html">Thực đơn & Dinh dưỡng</a></li>
                     <li><a href="packages.html">Gói đăng ký</a></li>
                     <li><a href="history.html">Lịch sử nấu ăn</a></li>
                 </ul>
@@ -176,6 +182,6 @@
         </div>
     </footer>
 
-    <script src="../js/nutrition.js"></script>
+    <script src="<%= request.getContextPath() %>/js/nutrition.js"></script>
 </body>
 </html>

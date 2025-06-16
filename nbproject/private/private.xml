@@ -2,6 +2,23 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/web/view/user_list.jsp</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/controller/UserManagementServlet.java</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/dao/DBconnection.java</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/web/view/authen/login.jsp</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/web/index.html</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/web/js/auth.js</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/dao/UserDAO.java</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/model/Users.java</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/controller/authen/AuthenticationServlet.java</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/web/css/auth.css</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/web/view/authen/register.jsp</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/web/view/nutrition.jsp</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/dao/FoodDAO.java</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/dao/GenericDAO.java</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/model/Foods.java</file>
+            <file>file:/D:/!course/FPT/AnGiHomNay_project/src/java/model/UserRole.java</file>
+        </group>
     </open-files>
 </project-private>

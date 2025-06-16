@@ -1,4 +1,4 @@
--- 1. Roles Table
+﻿-- 1. Roles Table
 CREATE TABLE Roles (
 RoleID INT PRIMARY KEY IDENTITY(1,1),
 RoleName NVARCHAR(100) NOT NULL UNIQUE
@@ -276,6 +276,7 @@ insert into Users (Email, Password, FullName, PhoneNumber) values ('dyurkov1a@wi
 insert into Users (Email, Password, FullName, PhoneNumber) values ('wcoonihan1b@posterous.com', 'bZ5_bt"', 'Lindie Sarfas', 'Wandis Coonihan');
 insert into Users (Email, Password, FullName, PhoneNumber) values ('nde1c@amazonaws.com', 'sU5>mNKH01v', 'Karisa Krimmer', 'Niki De Zuani');
 insert into Users (Email, Password, FullName, PhoneNumber) values ('ybudnik1d@umn.edu', 'fJ8}P''bg$PNh', 'Bailie Kingsland', 'York Budnik');
+insert into Users (Email, Password, FullName, PhoneNumber) values ('ybudn@umn.edu', 'fJ8}P''bg$PNh', 'Bailiee Kingssland', 'Yorrk Budnisk');
 
 insert into Roles (RoleName) values ('User');
 insert into Roles (RoleName) values ('Admin');
@@ -331,3 +332,97 @@ insert into UserRole (UserID, RoleID) values (48, 3);
 insert into UserRole (UserID, RoleID) values (49, 3);
 insert into UserRole (UserID, RoleID) values (12, 3);
 
+-- Insert Food Categories
+INSERT INTO Categories (CategoryName) VALUES
+-- By Cuisine
+(N'Vietnamese'),
+(N'Chinese'),
+(N'Japanese'),
+(N'Korean'),
+(N'Thai'),
+(N'Indian'),
+(N'Italian'),
+(N'French'),
+(N'Mexican'),
+(N'American'),
+(N'Mediterranean'),
+(N'Middle Eastern'),
+
+-- By Taste / Spice Level
+(N'Spicy'),
+(N'Mild'),
+(N'Sweet'),
+(N'Savory'),
+(N'Sour'),
+(N'Bitter'),
+(N'Umami'),
+
+-- By Cooking Method
+(N'Grilled'),
+(N'Fried'),
+(N'Steamed'),
+(N'Boiled'),
+(N'Roasted'),
+(N'Stir-Fried'),
+(N'Baked'),
+(N'Raw'),
+
+-- By Meal Type
+(N'Breakfast'),
+(N'Lunch'),
+(N'Dinner'),
+(N'Snack'),
+(N'Dessert'),
+(N'Supper'),
+(N'Brunch'),
+
+-- By Dietary / Health Preference
+(N'Vegetarian'),
+(N'Vegan'),
+(N'Gluten-Free'),
+(N'Low-Carb'),
+(N'High-Protein'),
+(N'Keto'),
+(N'Paleo'),
+(N'Dairy-Free'),
+(N'Nut-Free'),
+(N'Sugar-Free'),
+
+-- By Food Group
+(N'Meat'),
+(N'Seafood'),
+(N'Poultry'),
+(N'Vegetables'),
+(N'Fruits'),
+(N'Grains'),
+(N'Dairy'),
+(N'Legumes'),
+(N'Nuts & Seeds'),
+
+-- By Audience / Use Case
+(N'Kids-Friendly'),
+(N'Party Food'),
+(N'Street Food'),
+(N'Quick & Easy'),
+(N'Comfort Food'),
+(N'Festive'),
+
+-- By Preparation Time
+(N'Under 15 minutes'),
+(N'Under 30 minutes'),
+(N'1-hour meals'),
+(N'Slow Cooked');
+
+-- Insert Categories used for Vietnamese food
+INSERT INTO Categories (CategoryName)
+VALUES
+(N'Noodles'), (N'Sandwich'), (N'Spring Roll'), (N'Pork'), (N'Rice'), (N'Soup');
+
+-- Insert Vietnamese Foods
+INSERT INTO Foods (Name, Category, Description, FoodImage, Calories, Protein, Fat, Carbohydrates, Ingredients, PreparationMethod, Status)
+VALUES
+(N'Phở Bò', N'Vietnamese', N'Noodle soup with beef.', N'pho_bo.jpg', 350, 25.0, 10.0, 40.0, N'Rice noodles, beef, herbs, broth', N'Simmer beef bones for broth, cook noodles, serve with herbs', N'Active'),
+(N'Bún Chả', N'Vietnamese', N'Grilled pork with noodles.', N'bun_cha.jpg', 500, 30.0, 20.0, 45.0, N'Pork, rice noodles, fish sauce, herbs', N'Grill pork, serve with noodles and dipping sauce', N'Active'),
+(N'Cơm Tấm', N'Vietnamese', N'Broken rice with grilled pork.', N'com_tam.jpg', 600, 35.0, 25.0, 50.0, N'Broken rice, grilled pork, egg, vegetables', N'Grill pork, cook rice, serve with toppings', N'Active'),
+(N'Gỏi Cuốn', N'Vietnamese', N'Fresh spring rolls.', N'goi_cuon.jpg', 200, 10.0, 5.0, 25.0, N'Rice paper, shrimp, pork, vegetables, noodles', N'Wrap ingredients in rice paper, serve with sauce', N'Active'),
+(N'Bánh Mì', N'Vietnamese', N'Vietnamese baguette sandwich.', N'banh_mi.jpg', 400, 15.0, 18.0, 40.0, N'Baguette, pork, pate, pickled vegetables', N'Assemble sandwich with fillings', N'Active');
