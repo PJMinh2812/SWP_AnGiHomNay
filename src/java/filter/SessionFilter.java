@@ -4,7 +4,7 @@
  */
 package filter;
 
-import dao.UserDAO;
+import repository.UserDAO;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;

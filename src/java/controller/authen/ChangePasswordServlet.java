@@ -4,8 +4,8 @@
  */
 package controller.authen;
 
-import dao.DBconnection;
-import dao.UserDAO;
+import repository.DBconnection;
+import repository.UserDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

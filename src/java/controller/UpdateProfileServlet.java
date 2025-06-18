@@ -4,8 +4,8 @@
  */
 package controller;
 
-import dao.DBconnection;
-import dao.UserDAO;
+import repository.DBconnection;
+import repository.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;

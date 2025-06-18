@@ -1,8 +1,8 @@
 package controller;
 
-import dao.UserDAO;
+import repository.UserDAO;
 import model.Users;
-import dao.DBconnection;
+import repository.DBconnection;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import java.io.*;
