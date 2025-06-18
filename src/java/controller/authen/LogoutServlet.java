@@ -22,19 +22,33 @@ import jakarta.servlet.http.HttpSession;
 public class LogoutServlet extends HttpServlet {
 
     @Override
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Invalidate session
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
 
-        Cookie cookie = new Cookie("username", "");
-        cookie.setMaxAge(0); 
-        response.addCookie(cookie);
-        
+        // Clear all remember me cookies
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("userEmail".equals(cookie.getName())
+                        || "userID".equals(cookie.getName())
+                        || "rememberMe".equals(cookie.getName())) {
+
+                    Cookie clearCookie = new Cookie(cookie.getName(), "");
+                    clearCookie.setMaxAge(0); // Delete cookie
+                    String contextPath = request.getContextPath();
+                    clearCookie.setPath(contextPath.isEmpty() ? "/" : contextPath);
+                    response.addCookie(clearCookie);
+
+                    System.out.println("Cleared cookie: " + cookie.getName());
+                }
+            }
+        }
 
         response.sendRedirect(request.getContextPath() + "/view/authen/login.jsp");
     }

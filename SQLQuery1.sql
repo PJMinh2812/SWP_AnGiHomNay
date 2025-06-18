@@ -426,3 +426,96 @@ VALUES
 (N'Cơm Tấm', N'Vietnamese', N'Broken rice with grilled pork.', N'com_tam.jpg', 600, 35.0, 25.0, 50.0, N'Broken rice, grilled pork, egg, vegetables', N'Grill pork, cook rice, serve with toppings', N'Active'),
 (N'Gỏi Cuốn', N'Vietnamese', N'Fresh spring rolls.', N'goi_cuon.jpg', 200, 10.0, 5.0, 25.0, N'Rice paper, shrimp, pork, vegetables, noodles', N'Wrap ingredients in rice paper, serve with sauce', N'Active'),
 (N'Bánh Mì', N'Vietnamese', N'Vietnamese baguette sandwich.', N'banh_mi.jpg', 400, 15.0, 18.0, 40.0, N'Baguette, pork, pate, pickled vegetables', N'Assemble sandwich with fillings', N'Active');
+
+
+
+-- Insert Categories
+INSERT INTO Categories (CategoryName) VALUES (N'Vietnamese');
+INSERT INTO Categories (CategoryName) VALUES (N'Soup');
+INSERT INTO Categories (CategoryName) VALUES (N'Noodle');
+INSERT INTO Categories (CategoryName) VALUES (N'Grilled');
+INSERT INTO Categories (CategoryName) VALUES (N'Rice');
+INSERT INTO Categories (CategoryName) VALUES (N'Salad');
+INSERT INTO Categories (CategoryName) VALUES (N'Sandwich');
+INSERT INTO Categories (CategoryName) VALUES (N'Seafood');
+INSERT INTO Categories (CategoryName) VALUES (N'Snack');
+
+-- Insert Foods
+INSERT INTO Foods (Name, Description, Calories, Protein, Fat, Carbohydrates, Ingredients, PreparationMethod, Status)
+VALUES (N'Phở Bò', N'Beef noodle soup with herbs', 350, 25.0, 10.0, 45.0, N'Beef, rice noodles, herbs', N'Simmer broth, add noodles and beef', N'Active');
+
+INSERT INTO Foods (Name, Description, Calories, Protein, Fat, Carbohydrates, Ingredients, PreparationMethod, Status)
+VALUES (N'Bún Chả', N'Grilled pork with vermicelli', 500, 30.0, 20.0, 40.0, N'Pork, vermicelli, herbs', N'Grill pork, serve with noodles and dipping sauce', N'Active');
+
+INSERT INTO Foods (Name, Description, Calories, Protein, Fat, Carbohydrates, Ingredients, PreparationMethod, Status)
+VALUES (N'Cơm Tấm', N'Broken rice with grilled meat', 600, 35.0, 25.0, 55.0, N'Broken rice, pork, egg, pickles', N'Grill pork, fry egg, serve with rice', N'Active');
+
+INSERT INTO Foods (Name, Description, Calories, Protein, Fat, Carbohydrates, Ingredients, PreparationMethod, Status)
+VALUES (N'Gỏi Cuốn', N'Fresh spring rolls', 200, 15.0, 5.0, 25.0, N'Shrimp, pork, vermicelli, vegetables, rice paper', N'Wrap ingredients in rice paper', N'Active');
+
+INSERT INTO Foods (Name, Description, Calories, Protein, Fat, Carbohydrates, Ingredients, PreparationMethod, Status)
+VALUES (N'Bánh Mì', N'Vietnamese sandwich', 400, 18.0, 15.0, 45.0, N'Baguette, pork, vegetables, pâté', N'Assemble ingredients in baguette', N'Active');
+
+-- Map Foods to Categories (FoodCategories)
+-- Note: This assumes FoodIDs are 1 to 5 in order
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (1, 1); -- Phở Bò - Vietnamese
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (1, 2); -- Soup
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (1, 3); -- Noodle
+
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (2, 1); -- Bún Chả - Vietnamese
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (2, 3); -- Noodle
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (2, 4); -- Grilled
+
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (3, 1); -- Cơm Tấm - Vietnamese
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (3, 4); -- Grilled
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (3, 5); -- Rice
+
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (4, 1); -- Gỏi Cuốn - Vietnamese
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (4, 6); -- Salad
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (4, 8); -- Seafood
+
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (5, 1); -- Bánh Mì - Vietnamese
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (5, 7); -- Sandwich
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES (5, 9); -- Snack
+
+INSERT INTO Categories (CategoryName) VALUES
+(N'Noodle'),
+(N'Traditional'),
+(N'Fusion'),
+(N'Appetizer'),
+(N'Healthy'),
+(N'Pancake'),
+(N'Southern'),
+(N'Hue Cuisine'),
+(N'Central Vietnam'),
+(N'Rice Cake'),
+(N'Northern'),
+(N'Summer'),
+(N'Curry'),
+(N'Mini Pancake');
+
+INSERT INTO Foods (Name, Description, FoodImage, Calories, Protein, Fat, Carbohydrates, Ingredients, PreparationMethod, Status)
+VALUES
+(N'Chả Giò', N'Deep-fried rolls with pork, mushrooms, and noodles.', NULL, 300, 18.0, 12.0, 30.0, N'Rice paper, pork, mushrooms, vermicelli', N'Wrap and fry the rolls.', 'Available'),
+(N'Bánh Xèo', N'Crispy turmeric crepe with pork, shrimp, and bean sprouts.', NULL, 350, 20.0, 14.0, 35.0, N'Rice flour, turmeric, pork, shrimp, sprouts', N'Pan-fry the batter and fillings.', 'Available'),
+(N'Bún Bò Huế', N'Spicy beef noodle soup with lemongrass and pork hock.', NULL, 480, 28.0, 12.0, 52.0, N'Beef, noodles, lemongrass, chili', N'Simmer soup, serve with noodles.', 'Available'),
+(N'Mì Quảng', N'Turmeric-yellow noodles with shrimp, pork, herbs, and broth.', NULL, 400, 22.0, 8.0, 45.0, N'Noodles, turmeric, shrimp, pork, herbs', N'Mix ingredients and top with broth.', 'Available'),
+(N'Bánh Cuốn', N'Steamed rice rolls filled with minced pork and mushrooms.', NULL, 280, 14.0, 5.0, 32.0, N'Rice flour, pork, mushrooms', N'Steam and fill rice rolls.', 'Available'),
+(N'Hủ Tiếu', N'Clear noodle soup with pork, shrimp, and sometimes quail eggs.', NULL, 420, 20.0, 10.0, 45.0, N'Noodles, pork, shrimp, quail eggs', N'Simmer broth and add toppings.', 'Available'),
+(N'Chè Ba Màu', N'Layers of jelly, mung bean paste, and coconut milk.', NULL, 350, 5.0, 10.0, 60.0, N'Jelly, mung bean, coconut milk', N'Layer ingredients in glass.', 'Available'),
+(N'Cà Ri Gà', N'Chicken curry with potatoes, carrots, and baguette or rice.', NULL, 500, 28.0, 15.0, 45.0, N'Chicken, curry powder, veggies', N'Simmer curry and serve.', 'Available'),
+(N'Bánh Bèo', N'Steamed rice discs topped with dried shrimp and scallion oil.', NULL, 150, 6.0, 3.0, 18.0, N'Rice flour, dried shrimp, scallions', N'Steam cakes and top with toppings.', 'Available'),
+(N'Bánh Khọt', N'Mini savory pancakes with shrimp, mung beans, and herbs.', NULL, 320, 15.0, 12.0, 30.0, N'Flour, shrimp, mung beans', N'Fry mini pancakes with toppings.', 'Available');
+
+
+INSERT INTO FoodCategories (FoodID, CategoryID) VALUES
+(6, 9), (6, 11), (6, 4), -- Chả Giò
+(7, 12), (7, 4), (7, 13), -- Bánh Xèo
+(8, 1), (8, 2), (8, 14), (8, 15), -- Bún Bò Huế
+(9, 1), (9, 16), -- Mì Quảng
+(10, 17), (10, 18), (10, 19), -- Bánh Cuốn
+(11, 1), (11, 2), (11, 13), -- Hủ Tiếu
+(12, 20), (12, 21), (12, 22), -- Chè Ba Màu
+(13, 23), (13, 24), -- Cà Ri Gà
+(14, 17), (14, 25), -- Bánh Bèo
+(15, 12), (15, 26); -- Bánh Khọt

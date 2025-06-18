@@ -14,9 +14,41 @@ public class UserDAO extends DBconnection {
     }
 
     public UserDAO(Connection connection) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        this.conn = connection;
 
+    }
+    public boolean changePassword(int userID, String currentPassword, String newPassword) {
+        // First verify current password
+        String verifyQuery = "SELECT Password FROM Users WHERE UserID = ?";
+        try (PreparedStatement verifyPs = conn.prepareStatement(verifyQuery)) {
+            verifyPs.setInt(1, userID);
+            try (ResultSet rs = verifyPs.executeQuery()) {
+                if (rs.next()) {
+                    String storedPassword = rs.getString("Password");
+                    if (!currentPassword.equals(storedPassword)) {
+                        return false; // Current password doesn't match
+                    }
+                } else {
+                    return false; // User not found
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        // Update password
+        String updateQuery = "UPDATE Users SET Password = ? WHERE UserID = ?";
+        try (PreparedStatement updatePs = conn.prepareStatement(updateQuery)) {
+            updatePs.setString(1, newPassword);
+            updatePs.setInt(2, userID);
+            int rowsAffected = updatePs.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     public boolean register(Users user) throws Exception {
         try {
             String sql = "INSERT INTO Users (email, password, fullName, phoneNumber, status, createdAt) VALUES (?, ?, ?, ?, ?, GETDATE())";
@@ -154,6 +186,7 @@ public class UserDAO extends DBconnection {
         }
         return null;
     }
+
     public boolean updateUser(Users user) {
         String query = "UPDATE Users SET fullName = ?, phoneNumber = ? WHERE userID = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -167,6 +200,7 @@ public class UserDAO extends DBconnection {
             return false;
         }
     }
+
     public Users getUserWithRole(int userID) {
         Users user = null;
         String query = "SELECT u.UserID, u.Email, u.FullName, u.PhoneNumber, u.Status, u.CreatedAt, "
@@ -193,5 +227,27 @@ public class UserDAO extends DBconnection {
             e.printStackTrace();
         }
         return user;
+    }
+    
+        public List<Users> searchUsers(String keyword) throws SQLException {
+        List<Users> users = new ArrayList<>();
+        String sql = "SELECT * FROM Users WHERE Email LIKE ? OR FullName LIKE ? OR PhoneNumber LIKE ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            String kw = "%" + keyword + "%";
+            ps.setString(1, kw);
+            ps.setString(2, kw);
+            ps.setString(3, kw);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Users u = new Users();
+                    u.setUserID(rs.getInt("UserID"));
+                    u.setEmail(rs.getString("Email"));
+                    u.setFullName(rs.getString("FullName"));
+                    u.setStatus(rs.getString("Status"));
+                    users.add(u);
+                }
+            }
+        }
+        return users;
     }
 }

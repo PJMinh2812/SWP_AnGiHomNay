@@ -8,32 +8,7 @@
 <%@page import="jakarta.servlet.http.Cookie"%>
 <%@page import="jakarta.servlet.http.HttpSession"%>
 <%@page import="model.Users"%>
-<%
-    Users user = null;
 
-    if (session != null) {
-        user = (Users) session.getAttribute("user");
-    }
-
-    if (user == null) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("email".equals(cookie.getName())) {
-                    String email = cookie.getValue();
-                    UserDAO userDAO = new UserDAO(DBconnection.getConnection());
-                    user = userDAO.getUserByEmail(email);
-
-
-                    if (user != null) {
-                        session.setAttribute("user", user);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -73,46 +48,8 @@
 
 
     <body>
-        <!-- Header -->
-        <header class="header">
-            <div class="header-container">
-                <div class="logo">
-                    <h1>AnGiHomNay</h1>
-                </div>
-                <nav class="main-nav">
-                    <ul>
-                        <li><a href="<%= request.getContextPath()%>/view/index.html">Trang chủ</a></li>
-                        <li><a href="<%= request.getContextPath()%>/view/random.html">Quay món</a></li>
-                        <li><a href="<%= request.getContextPath()%>/view/trending.html">Món hot</a></li>
-                        <li><a href="<%= request.getContextPath()%>/view/nutrition.jsp">Thực đơn & Dinh dưỡng</a></li>
-                        <li><a href="<%= request.getContextPath()%>/view/packages.html">Gói đăng ký</a></li>
-                        <li><a href="<%= request.getContextPath()%>/view/history.html">Lịch sử nấu ăn</a></li>
-                    </ul>
-                </nav>
-                <div class="user-actions">
-                    <%
-                        if (user == null) {
-                    %>
-                    <a href="<%= request.getContextPath()%>/view/authen/login.jsp" class="btn-login">Đăng nhập</a>
-                    <a href="<%= request.getContextPath()%>/view/authen/register.jsp" class="btn-register">Đăng ký</a>
-                    <%
-                    } else {
-                    %>
-                    <div class="user-dropdown">
-                        <img src="<%= request.getContextPath()%>/img/avatar-default.png" alt="User" class="avatar-icon" id="avatarIcon">
-                        <ul class="dropdown-menu" id="userDropdown">
-                            <li><a href="<%= request.getContextPath()%>/view/user-profile.jsp">Trang cá nhân</a></li>
-                            <li><a href="<%= request.getContextPath()%>/settings.jsp">Cài đặt</a></li>
-                            <li><a href="<%= request.getContextPath()%>/logout">Đăng xuất</a></li>
-                        </ul>
-                    </div>
-                    <%
-                        }
-                    %>
-                </div>
-            </div>
-        </header>
-
+       
+            <jsp:include page="common/header.jsp"></jsp:include>
         <!-- Main Content -->
         <main>
             <!-- Hero Section -->

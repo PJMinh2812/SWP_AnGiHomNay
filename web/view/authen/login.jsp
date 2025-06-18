@@ -47,10 +47,10 @@
                         </div>
                     </div>
                     <div class="form-options">
-                        <label class="remember-me">
-                            <input type="checkbox" name="remember" >
-                            <span>Ghi nhớ đăng nhập</span>
-                        </label>
+                        <div class="remember-me">
+                            <input   type="checkbox" id="remember" name="remember" value="on" >
+                            <label for="remember">Ghi nhớ đăng nhập</label>
+                        </div>
                         <a href="forgot-password.html" class="forgot-password">Quên mật khẩu?</a>
                     </div>
                     <button type="submit" class="btn-primary btn-login-submit">Đăng nhập</button>

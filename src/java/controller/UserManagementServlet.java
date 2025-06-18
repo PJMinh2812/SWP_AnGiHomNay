@@ -1,6 +1,5 @@
 package controller;
 
-
 import dao.UserDAO;
 import model.Users;
 import dao.DBconnection;
@@ -8,10 +7,13 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import java.io.*;
 import java.util.*;
+import jakarta.servlet.annotation.WebServlet;
 
+@WebServlet(name = "UserManagementServlet", urlPatterns = { "/UserManagementServlet" })
 public class UserManagementServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
+        String search = req.getParameter("search");
         UserDAO dao = new UserDAO(DBconnection.getConnection());
         try {
             if ("export".equals(action)) {
@@ -26,8 +28,14 @@ public class UserManagementServlet extends HttpServlet {
                 out.flush();
                 return;
             }
-            List<Users> users = dao.getAllUsers();
+            List<Users> users;
+            if (search != null && !search.trim().isEmpty()) {
+                users = dao.searchUsers(search.trim());
+            } else {
+                users = dao.getAllUsers();
+            }
             req.setAttribute("users", users);
+            req.setAttribute("search", search);
             req.getRequestDispatcher("/view/user_list.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);

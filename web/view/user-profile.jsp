@@ -1,10 +1,6 @@
-<%-- 
-    Document   : user-profile
-    Created on : Jun 16, 2025, 3:30:12 AM
-    Author     : Admin
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -17,194 +13,249 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/css/profile.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="icon" href="<%= request.getContextPath()%>/images/favicon.ico">
-        <style>
-            /* Modal styles */
-            .modal {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-                justify-content: center;
-                align-items: center;
-            }
-            .modal-content {
-                background: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                max-width: 400px;
-                width: 100%;
-                position: relative;
-            }
-            .modal-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-            .modal-header h3 {
-                margin: 0;
-            }
-            .modal-close {
-                cursor: pointer;
-                font-size: 1.5rem;
-                color: #333;
-            }
-            .btn-primary {
-                background-color: #007bff;
-                color: #fff;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-            .btn-secondary {
-                background-color: #6c757d;
-                color: #fff;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-            .user-role {
-                font-weight: bold;
-                color: #ff4d4d;
-                margin-top: 5px;
-            }
-        </style>
     </head>
     <body>
         <!-- Header -->
-        <header class="header">
-            <div class="header-container">
-                <div class="logo">
-                    <a href="index.jsp"><h1>AnGiHomNay</h1></a>
-                </div>
-            </div>
-        </header>
-
-        <main class="profile-container">
-            <c:choose>
-                <c:when test="${not empty user}">
+        <jsp:include page="common/header.jsp"></jsp:include>
+            <main>
+                <div class="profile-container">
                     <div class="profile-card">
+                        <!-- Profile Header with Favorite Icon -->
                         <div class="profile-header">
-                            <div class="avatar">
-                                <img src="<%= request.getContextPath()%>/images/user-avatar.png" alt="User Avatar">
+
+                            <div class="profile-actions">
+                                <button type="button" class="favorite-btn" onclick="goToFavorites()" title="Danh sách yêu thích">
+                                    <i class="fas fa-heart"></i>
+                                    <span>Yêu thích</span>
+                                </button>
                             </div>
-                            <h2 class="username">${user.fullName}</h2>
-                            <p class="user-role">
-                            <c:choose>
-                                <c:when test="${user.roleName != null}">
-                                    ${user.roleName}
-                                </c:when>
-                                <c:otherwise>
-                                    <i class="fas fa-user-slash"></i> Vai trò chưa xác định
-                                </c:otherwise>
-                            </c:choose>
-                            </p>
+                            <div class="avatar">
+                                <img src="https://via.placeholder.com/120x120/FF6B6B/ffffff?text=${user.fullName.substring(0,1)}" 
+                                 alt="Avatar">
                         </div>
-                        <div class="profile-details">
-                            <form action="${pageContext.request.contextPath}/profile" method="get">
-                                <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" id="email" name="email" value="${user.email}" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fullname">Họ và Tên</label>
-                                    <input type="text" id="fullname" name="fullname" value="${user.fullName}" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">Số Điện Thoại</label>
-                                    <input type="tel" id="phone" name="phone" value="${user.phoneNumber}" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="status">Trạng Thái</label>
-                                    <input type="text" id="status" name="status" value="${user.status}" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="createdAt">Ngày Tạo</label>
-                                    <input type="text" id="createdAt" name="createdAt" value="${user.createdAt}" readonly>
-                                </div>
-                                <button id="editProfileBtn" type="button" class="btn-primary">Cập Nhật</button>
-                            </form>
-                            <button class="btn-secondary favorite-btn" onclick="window.location.href = 'favorites.jsp'">
-                                <i class="fas fa-heart"></i> Xem Yêu Thích
+                        <h2 class="username">${user.fullName}</h2>
+                        <p class="user-role">
+                            <i class="fas fa-user-tag"></i>
+                            ${not empty user.roleName ? user.roleName : 'Người dùng'}
+                        </p>
+
+                    </div>
+
+                    <!-- Profile Display Mode -->
+                    <div id="profileDisplay" class="profile-details">
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email:</label>
+                            <input type="text" value="${user.email}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Số điện thoại:</label>
+                            <input type="text" value="${not empty user.phoneNumber ? user.phoneNumber : 'Chưa cập nhật'}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-info-circle"></i> Trạng thái:</label>
+                            <input type="text" value="${user.status}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-alt"></i> Ngày tham gia:</label>
+                            <input type="text" value="<fmt:formatDate value='${user.createdAt}' pattern='dd/MM/yyyy' />" readonly>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="profile-buttons">
+                            <button type="button" class="btn-primary" onclick="toggleEditMode()">
+                                <i class="fas fa-edit"></i> Chỉnh sửa thông tin
+                            </button>
+
+                            <button type="button" class="btn-secondary" onclick="togglePasswordMode()">
+                                <i class="fas fa-key"></i> Đổi mật khẩu
                             </button>
                         </div>
                     </div>
-                </c:when>
-                <c:otherwise>
-                    <div class="error-message">
-                        <p>Không tìm thấy thông tin người dùng.</p>
-                        <a href="index.jsp" class="btn-secondary">Quay lại trang chính</a>
+
+                    <!-- Profile Edit Mode -->
+                    <div id="profileEdit" class="profile-details" style="display: none;">
+                        <form action="<%= request.getContextPath()%>/profile" method="post">
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="userID" value="${user.userID}">
+
+                            <div class="form-group">
+                                <label for="fullName"><i class="fas fa-user"></i> Họ và tên *</label>
+                                <input type="text" id="fullName" name="fullName" value="${user.fullName}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-envelope"></i> Email</label>
+                                <input type="email" value="${user.email}" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phoneNumber"><i class="fas fa-phone"></i> Số điện thoại</label>
+                                <input type="tel" id="phoneNumber" name="phoneNumber" value="${user.phoneNumber}">
+                            </div>
+
+                            <div class="profile-buttons">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i> Lưu thay đổi
+                                </button>
+
+                                <button type="button" class="btn-secondary" onclick="cancelEdit()">
+                                    <i class="fas fa-times"></i> Hủy bỏ
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </c:otherwise>
-            </c:choose>
+
+                    <!-- Change Password Mode -->
+                    <div id="passwordChange" class="profile-details" style="display: none;">
+                        <form action="<%= request.getContextPath()%>/changePassword" method="post" id="changePasswordForm">
+                            <input type="hidden" name="userID" value="${user.userID}">
+
+                            <div class="form-group">
+                                <label for="currentPassword"><i class="fas fa-lock"></i> Mật khẩu hiện tại *</label>
+                                <div class="password-input">
+                                    <input type="password" id="currentPassword" name="currentPassword" required>
+                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('currentPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newPassword"><i class="fas fa-key"></i> Mật khẩu mới *</label>
+                                <div class="password-input">
+                                    <input type="password" id="newPassword" name="newPassword" required minlength="6">
+                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('newPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text">Mật khẩu phải có ít nhất 6 ký tự</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmPassword"><i class="fas fa-shield-alt"></i> Xác nhận mật khẩu mới *</label>
+                                <div class="password-input">
+                                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="profile-buttons">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i> Đổi mật khẩu
+                                </button>
+
+                                <button type="button" class="btn-secondary" onclick="cancelPasswordChange()">
+                                    <i class="fas fa-times"></i> Hủy bỏ
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Messages -->
+                    <c:if test="${not empty message}">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> ${message}
+                        </div>
+                    </c:if>
+
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle"></i> ${error}
+                        </div>
+                    </c:if>
+                </div>
+            </div>
         </main>
 
-        <!-- Pop-up Modal -->
-        <div class="modal" id="editProfileModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Chỉnh sửa thông tin</h3>
-                    <span class="modal-close" id="closeModal">&times;</span>
-                </div>
-                <form action="${pageContext.request.contextPath}/updateProfile" method="post">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" value="${user.email}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="fullname">Họ và Tên</label>
-                        <input type="text" id="fullname" name="fullname" value="${user.fullName}" placeholder="Nhập họ và tên đầy đủ" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Số Điện Thoại</label>
-                        <input type="tel" id="phone" name="phone" value="${user.phoneNumber}" placeholder="Nhập số điện thoại" required>
-                    </div>
-                    <button type="submit" class="btn-primary">Lưu Thay Đổi</button>
-                </form>
-            </div>
-        </div>
-
         <script>
-            const editProfileBtn = document.getElementById('editProfileBtn');
-            const editProfileModal = document.getElementById('editProfileModal');
-            const closeModal = document.getElementById('closeModal');
+            // Toggle between display and edit modes
+            function toggleEditMode() {
+                document.getElementById('profileDisplay').style.display = 'none';
+                document.getElementById('profileEdit').style.display = 'block';
+                document.getElementById('passwordChange').style.display = 'none';
+            }
 
-            editProfileBtn.addEventListener('click', () => {
-                editProfileModal.style.display = 'flex';
-            });
+            function cancelEdit() {
+                document.getElementById('profileEdit').style.display = 'none';
+                document.getElementById('profileDisplay').style.display = 'block';
+                document.getElementById('passwordChange').style.display = 'none';
+            }
 
-            closeModal.addEventListener('click', () => {
-                editProfileModal.style.display = 'none';
-            });
+            // Toggle password change mode
+            function togglePasswordMode() {
+                document.getElementById('profileDisplay').style.display = 'none';
+                document.getElementById('profileEdit').style.display = 'none';
+                document.getElementById('passwordChange').style.display = 'block';
+            }
 
-            window.addEventListener('click', (e) => {
-                if (e.target === editProfileModal) {
-                    editProfileModal.style.display = 'none';
+            function cancelPasswordChange() {
+                document.getElementById('passwordChange').style.display = 'none';
+                document.getElementById('profileDisplay').style.display = 'block';
+                document.getElementById('profileEdit').style.display = 'none';
+
+                // Clear password fields
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            }
+
+            // Toggle password visibility
+            function togglePasswordVisibility(fieldId) {
+                const field = document.getElementById(fieldId);
+                const button = field.nextElementSibling;
+                const icon = button.querySelector('i');
+
+                if (field.type === 'password') {
+                    field.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    field.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
                 }
-            });
+            }
 
-            const form = document.querySelector("#editProfileModal form");
-            form.addEventListener("submit", (event) => {
-                const fullname = form.fullname.value.trim();
-                const phone = form.phone.value.trim();
+            // Navigate to favorites page
+            function goToFavorites() {
+                window.location.href = '<%= request.getContextPath()%>/favorites?userID=${user.userID}';
+                    }
 
-                if (fullname === "" || phone === "") {
-                    event.preventDefault();
-                    alert("Họ và tên hoặc số điện thoại không được để trống.");
-                    return;
-                }
+                    // Form validation for password change
+                    document.getElementById('changePasswordForm').addEventListener('submit', function (e) {
+                        const currentPassword = document.getElementById('currentPassword').value;
+                        const newPassword = document.getElementById('newPassword').value;
+                        const confirmPassword = document.getElementById('confirmPassword').value;
 
-                if (!/^\d{10,11}$/.test(phone)) {
-                    event.preventDefault();
-                    alert("Số điện thoại phải có 10-11 chữ số.");
-                    return;
-                }
-            });
+                        if (currentPassword.length < 1) {
+                            e.preventDefault();
+                            alert('Vui lòng nhập mật khẩu hiện tại.');
+                            return false;
+                        }
+
+                        if (newPassword.length < 6) {
+                            e.preventDefault();
+                            alert('Mật khẩu mới phải có ít nhất 6 ký tự.');
+                            return false;
+                        }
+
+                        if (newPassword !== confirmPassword) {
+                            e.preventDefault();
+                            alert('Mật khẩu xác nhận không khớp.');
+                            return false;
+                        }
+
+                        if (currentPassword === newPassword) {
+                            e.preventDefault();
+                            alert('Mật khẩu mới phải khác mật khẩu hiện tại.');
+                            return false;
+                        }
+                    });
         </script>
     </body>
 </html>

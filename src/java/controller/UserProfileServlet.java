@@ -22,6 +22,7 @@ import model.Users;
  *
  * @author Admin
  */
+
 @WebServlet(name = "UserProfileServlet", urlPatterns = {"/profile"})
 public class UserProfileServlet extends HttpServlet {
 
@@ -29,7 +30,6 @@ public class UserProfileServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // Lấy tham số userID từ request
             String userIdParam = request.getParameter("userID");
             if (userIdParam == null || userIdParam.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "User ID is missing.");
@@ -44,26 +44,71 @@ public class UserProfileServlet extends HttpServlet {
                 return;
             }
 
-            // Tạo DAO và lấy thông tin người dùng
             UserDAO userDAO = new UserDAO(DBconnection.getConnection());
             Users user = userDAO.getUserWithRole(userID);
-
+            
             if (user == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found.");
                 return;
             }
 
-            // Đưa thông tin người dùng vào request scope
             request.setAttribute("user", user);
-
-            // Chuyển tiếp đến file JSP để hiển thị
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/user-profile.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/view/user-profile.jsp");
             dispatcher.forward(request, response);
-
+            
         } catch (Exception e) {
-            // Ghi log lỗi và trả về mã lỗi 500
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred on the server.");
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            String action = request.getParameter("action");
+            
+            if ("update".equals(action)) {
+                updateUserProfile(request, response);
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action.");
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Đã xảy ra lỗi. Vui lòng thử lại.");
+            doGet(request, response);
+        }
+    }
+
+    private void updateUserProfile(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        int userID = Integer.parseInt(request.getParameter("userID"));
+        String fullName = request.getParameter("fullName");
+        String phoneNumber = request.getParameter("phoneNumber");
+
+        if (fullName == null || fullName.trim().length() < 2) {
+            request.setAttribute("error", "Họ và tên phải có ít nhất 2 ký tự.");
+            doGet(request, response);
+            return;
+        }
+
+        Users user = new Users();
+        user.setUserID(userID);
+        user.setFullName(fullName.trim());
+        user.setPhoneNumber(phoneNumber != null ? phoneNumber.trim() : "");
+
+        UserDAO userDAO = new UserDAO(DBconnection.getConnection());
+        boolean success = userDAO.updateUser(user);
+
+        if (success) {
+            request.setAttribute("message", "Cập nhật thông tin thành công!");
+        } else {
+            request.setAttribute("error", "Không thể cập nhật thông tin. Vui lòng thử lại.");
+        }
+
+        // Fixed redirect path
+        response.sendRedirect(request.getContextPath() + "/profile?userID=" + userID);
     }
 }

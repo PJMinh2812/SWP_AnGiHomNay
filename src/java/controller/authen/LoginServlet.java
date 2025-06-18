@@ -26,23 +26,47 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+
         try {
             UserDAO dao = new UserDAO();
             Users user = dao.login(email, password);
 
             if (user != null) {
+                // Create session
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
-                session.setMaxInactiveInterval(30 * 60);
-                // LoginServlet xử lý đăng nhập
-                boolean rememberMe = "on".equals(request.getParameter("remember"));
-                if (rememberMe) {
-                    Cookie emailCookie = new Cookie("email", user.getEmail());
-                    emailCookie.setMaxAge(7 * 24 * 60 * 60);
+                session.setAttribute("userID", user.getUserID());
+                session.setAttribute("userEmail", user.getEmail());
+                session.setMaxInactiveInterval(24 * 60 * 60); // 24 hours
+
+                // Handle "Ghi nhớ đăng nhập" checkbox
+                String rememberMe = request.getParameter("remember");
+                if ("on".equals(rememberMe) || "true".equals(rememberMe)) {
+                    // Create remember me cookies
+                    Cookie emailCookie = new Cookie("userEmail", user.getEmail());
+                    Cookie userIdCookie = new Cookie("userID", String.valueOf(user.getUserID()));
+                    Cookie rememberCookie = new Cookie("rememberMe", "true");
+
+                    // Set cookie expiration (30 days)
+                    int cookieAge = 30 * 24 * 60 * 60;
+                    emailCookie.setMaxAge(cookieAge);
+                    userIdCookie.setMaxAge(cookieAge);
+                    rememberCookie.setMaxAge(cookieAge);
+
+                    // Set cookie path for proper scope
+                    String contextPath = request.getContextPath();
+                    emailCookie.setPath(contextPath.isEmpty() ? "/" : contextPath);
+                    userIdCookie.setPath(contextPath.isEmpty() ? "/" : contextPath);
+                    rememberCookie.setPath(contextPath.isEmpty() ? "/" : contextPath);
+
+                    // Add cookies to response
                     response.addCookie(emailCookie);
+                    response.addCookie(userIdCookie);
+                    response.addCookie(rememberCookie);
+
+                    System.out.println("Remember me cookies created for user: " + user.getEmail());
                 }
 
                 response.sendRedirect(request.getContextPath() + "/view/index.jsp");
@@ -50,9 +74,8 @@ public class LoginServlet extends HttpServlet {
                 request.setAttribute("error", "Email hoặc mật khẩu không chính xác.");
                 request.getRequestDispatcher("/view/authen/login.jsp").forward(request, response);
             }
-
         } catch (Exception e) {
-            e.printStackTrace(); // Ghi log lỗi
+            e.printStackTrace();
             request.setAttribute("error", "Đã xảy ra lỗi, vui lòng thử lại.");
             request.getRequestDispatcher("/view/authen/login.jsp").forward(request, response);
         }
