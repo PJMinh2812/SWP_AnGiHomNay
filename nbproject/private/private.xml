@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/DAO/UserDAO.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/DAO/DBconnection.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/model/User.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/controller/LoginController.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/DAO/OrderDAO.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/DAO/FoodDAO.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/DAO/BookingDAO.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/model/Food.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/model/Order.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/model/OrderFood.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/model/Payment.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/model/Restaurant.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/controller/PaymentController.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/controller/OrderController.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/controller/FoodSuggestionController.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/controller/BookingController.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/DAO/RestaurantDAO.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/DAO/PaymentDAO.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/service/BookingService.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/service/FoodService.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/service/PaymentService.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/service/UserService.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/web/view/authen/forgot.jsp</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/web/js/auth.js</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/web/WEB-INF/web.xml</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/web/view/authen/login.jsp</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/web/view/common/header.jsp</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/controller/RegisterController.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/src/java/controller/LogoutController.java</file>
+            <file>file:/D:/!course/FPT/%20AnGiHomNay_new/web/view/index.jsp</file>
+        </group>
+    </open-files>
+</project-private>
