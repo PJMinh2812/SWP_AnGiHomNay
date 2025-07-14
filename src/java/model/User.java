@@ -2,8 +2,8 @@ package model;
 
 import java.sql.Timestamp;
 
-
 public class User {
+
     private int id;
     private String userName;
     private String email;
@@ -11,9 +11,11 @@ public class User {
     private String phoneNumber;
     private String status;
     private java.sql.Timestamp createdAt;
+    private String role;
 
     // Constructors
-    public User() {}
+    public User() {
+    }
 
     public User(int id, String userName, String email, String password, String phoneNumber, String status, java.sql.Timestamp createdAt) {
         this.id = id;
@@ -25,7 +27,14 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    public String getRole() {
+        return role;
+    }
 
+    public void setRole(String role) {
+        this.role = role;
+    }
+    
     public int getId() {
         return id;
     }
@@ -81,5 +90,5 @@ public class User {
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
-    
+
 }

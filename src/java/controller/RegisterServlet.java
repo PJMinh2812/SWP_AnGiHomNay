@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 import java.util.regex.Pattern;
 
 @WebServlet("/register")
-public class RegisterController extends HttpServlet {
+public class RegisterServlet extends HttpServlet {
     private UserService userService = new UserService();
 
     @Override

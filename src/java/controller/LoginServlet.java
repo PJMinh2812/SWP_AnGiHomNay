@@ -10,7 +10,7 @@ import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 
 @WebServlet("/login")
-public class LoginController extends HttpServlet {
+public class LoginServlet extends HttpServlet {
     private UserService userService = new UserService();
 
     @Override

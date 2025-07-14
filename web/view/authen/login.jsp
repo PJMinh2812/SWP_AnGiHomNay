@@ -5,79 +5,102 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Đăng nhập - AnGiHomNay</title>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/css/main.css">
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/css/header.css">
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/css/auth.css">
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/css/animations.css">
+        <link rel="icon" type="image/x-icon" href="<%= request.getContextPath()%>/img/logo.jpg">
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/css/main.css">
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/css/auth.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     </head>
+
     <body>
-        <!-- Header -->
-        <header class="header">
-            <div class="header-container">
-                <div class="logo">
-                    <a href="<%= request.getContextPath() %>/view/index.jsp"><h1>AnGiHomNay</h1></a>
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-logo">
+                    <img src="<%= request.getContextPath()%>/img/logo.jpg" alt="AnGiHomNay Logo">
                 </div>
-            </div>
-        </header>
 
-        <main class="auth-container">
-            <div class="auth-box fade-in">
-                <h2>Đăng nhập</h2>
-                
-                <% String error = (String) request.getAttribute("error"); %>
-                <% if (error != null) {%>  
-                <div class="error-message slide-in-left"><%= error%></div>
-                <% }%>
-                
-                <% String success = (String) request.getAttribute("success"); %>
-                <% if (success != null) {%>  
-                <div class="success-message slide-in-left"><%= success%></div>
+                <div class="auth-header">
+                    <h2>Đăng nhập</h2>
+                    <p>Chào mừng bạn trở lại AnGiHomNay</p>
+                </div>
+
+                <!-- Display error message if any -->
+                <% if (request.getAttribute("errorMessage") != null) {%>
+                <div class="error-message">
+                    <%= request.getAttribute("errorMessage")%>
+                </div>
+                <% } %>
+
+                <!-- Display success message if any -->
+                <% if (request.getAttribute("successMessage") != null) {%>
+                <div class="success-message">
+                    <%= request.getAttribute("successMessage")%>
+                </div>
                 <% }%>
 
-                <form action="${pageContext.request.contextPath}/login" method="post" id="loginform" class="auth-form">
+                <form action="<%= request.getContextPath()%>/login" method="post" class="auth-form">
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <div class="input-group">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" name="email" required placeholder="Nhập email của bạn" class="input-focus-animation">
-                        </div>
+                        <input type="email" id="email" name="email" required
+                               value="<%= request.getParameter("email") != null ? request.getParameter("email") : ""%>">
                     </div>
+
                     <div class="form-group">
                         <label for="password">Mật khẩu</label>
-                        <div class="input-group">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" id="password" name="password" required placeholder="Nhập mật khẩu" class="input-focus-animation">
-                            <button type="button" class="toggle-password">
-                                <i class="fas fa-eye"></i>
+                        <div class="password-group">
+                            <input type="password" id="password" name="password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="fas fa-eye" id="passwordIcon"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="form-options">
+
+                    <div class="remember-forgot">
                         <div class="remember-me">
-                            <input type="checkbox" id="remember" name="remember" value="on">
+                            <input type="checkbox" id="remember" name="remember">
                             <label for="remember">Ghi nhớ đăng nhập</label>
                         </div>
-                        <a href="<%= request.getContextPath() %>/view/authen/forgot.jsp" class="forgot-password">Quên mật khẩu?</a>
+                        <a href="<%= request.getContextPath()%>/forgot-password" class="forgot-password">Quên mật khẩu?</a>
                     </div>
-                    <button type="submit" class="btn-primary btn-login-submit btn-hover-effect">Đăng nhập</button>
+
+                    <button type="submit" class="auth-btn">Đăng nhập</button>
                 </form>
 
-                <div class="auth-separator"><span>hoặc</span></div>
-
-                <div class="social-login">
-                    <button class="btn-social btn-google btn-hover-effect">
-                        <i class="fab fa-google"></i>
-                        <span>Đăng nhập với Google</span>
-                    </button>
+                <div class="auth-links">
+                    <p>Chưa có tài khoản? <a href="<%= request.getContextPath()%>/register">Đăng ký ngay</a></p>
                 </div>
 
-                <p class="auth-switch">
-                    Chưa có tài khoản? <a href="<%= request.getContextPath() %>/view/authen/register.jsp">Đăng ký ngay</a>
-                </p>
+                <div class="social-login">
+                    <p>Hoặc đăng nhập bằng</p>
+                    <a href="<%= request.getContextPath()%>/google-oauth" class="social-btn google">
+                        <i class="fab fa-google"></i>
+                        Đăng nhập với Google
+                    </a>
+                </div>
             </div>
-        </main>
+        </div>
 
-        <script src="<%= request.getContextPath() %>/js/auth.js"></script>
+        <script>
+            function togglePassword() {
+                const passwordInput = document.getElementById('password');
+                const passwordIcon = document.getElementById('passwordIcon');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    passwordIcon.classList.remove('fa-eye');
+                    passwordIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    passwordIcon.classList.remove('fa-eye-slash');
+                    passwordIcon.classList.add('fa-eye');
+                }
+            }
+
+            // Add loading state to form submission
+            document.querySelector('.auth-form').addEventListener('submit', function () {
+                const submitBtn = document.querySelector('.auth-btn');
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            });
+        </script>
     </body>
 </html>

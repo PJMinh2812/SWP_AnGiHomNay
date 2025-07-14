@@ -1,22 +1,23 @@
 package DAO;
 
-
 import model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
+
     private Connection conn;
 
     public UserDAO() {
         conn = DBconnection.getConnection();
     }
+
     public User authenticate(String email, String password) {
         // SQL query to check if a user exists with the given email and password
         String query = "SELECT * FROM users WHERE email = ? AND password = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            
+
             stmt.setString(1, email);
             stmt.setString(2, password);  // In production, use hashed passwords!
 
@@ -25,7 +26,7 @@ public class UserDAO {
                 // If a matching user is found, return the User object
                 User user = new User();
                 user.setId(rs.getInt("id"));
-                user.setUserName(rs.getString("user_name"));
+                user.setUserName(rs.getString("Username"));
                 user.setEmail(rs.getString("email"));
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setStatus(rs.getString("status"));
@@ -36,6 +37,7 @@ public class UserDAO {
         }
         return null;  // Return null if no user is found
     }
+
     public User getUserByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM Users WHERE Email = ? AND Password = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -95,15 +97,27 @@ public class UserDAO {
 
     private User extractUser(ResultSet rs) throws SQLException {
         return new User(
-            rs.getInt("ID"),
-            rs.getString("UserName"),
-            rs.getString("Email"),
-            rs.getString("Password"),
-            rs.getString("PhoneNumber"),
-            rs.getString("Status"),
-            rs.getTimestamp("CreatedAt")
+                rs.getInt("ID"),
+                rs.getString("UserName"),
+                rs.getString("Email"),
+                rs.getString("Password"),
+                rs.getString("PhoneNumber"),
+                rs.getString("Status"),
+                rs.getTimestamp("CreatedAt")
         );
     }
 
-    // Bạn có thể thêm các method: updateUser(), deleteUser(), getUserById()...
+    public User getUserByEmail(String email) {
+        String sql = "SELECT * FROM Users WHERE Email = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return extractUser(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

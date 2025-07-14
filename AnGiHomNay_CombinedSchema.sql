@@ -1,22 +1,21 @@
-
--- USERS
+﻿-- USERS Table
 CREATE TABLE Users (
     ID INT PRIMARY KEY IDENTITY,
-    UserName VARCHAR(50),
-    Email VARCHAR(100),
+    UserName VARCHAR(50) UNIQUE,  -- UNIQUE constraint added
+    Email VARCHAR(100) UNIQUE,    -- UNIQUE constraint added
     Password VARCHAR(255),
-    PhoneNumber VARCHAR(20),
+    PhoneNumber VARCHAR(20) UNIQUE,  -- UNIQUE constraint added
     Status VARCHAR(50),
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
--- ROLE
+-- ROLE Table
 CREATE TABLE Role (
     ID INT PRIMARY KEY IDENTITY,
-    RoleName VARCHAR(50)
+    RoleName VARCHAR(50) UNIQUE -- Ensuring role names are unique
 );
 
--- USER-ROLE LINK
+-- USER-ROLE LINK Table
 CREATE TABLE UserRole (
     UserID INT,
     RoleID INT,
@@ -25,30 +24,30 @@ CREATE TABLE UserRole (
     FOREIGN KEY (RoleID) REFERENCES Role(ID)
 );
 
--- RESTAURANT
+-- RESTAURANT Table
 CREATE TABLE Restaurant (
     ID INT PRIMARY KEY IDENTITY,
-    Name VARCHAR(100),
+    Name VARCHAR(100) UNIQUE,  -- Ensure restaurant names are unique
     OwnerID INT,
     Address VARCHAR(255),
     FOREIGN KEY (OwnerID) REFERENCES Users(ID)
 );
 
--- FOOD
+-- FOOD Table
 CREATE TABLE Food (
     ID INT PRIMARY KEY IDENTITY,
-    Name VARCHAR(100),
+    Name VARCHAR(100) UNIQUE,  -- Ensure food names are unique
     Description TEXT,
     Price DECIMAL(10, 2)
 );
 
--- CATEGORY
+-- CATEGORY Table
 CREATE TABLE Category (
     ID INT PRIMARY KEY IDENTITY,
-    Name VARCHAR(50)
+    Name VARCHAR(50) UNIQUE
 );
 
--- FOOD-CATEGORY LINK
+-- FOOD-CATEGORY LINK Table
 CREATE TABLE FoodCategory (
     FoodID INT,
     CategoryID INT,
@@ -57,7 +56,7 @@ CREATE TABLE FoodCategory (
     FOREIGN KEY (CategoryID) REFERENCES Category(ID)
 );
 
--- FOOD-RESTAURANT LINK
+-- FOOD-RESTAURANT LINK Table
 CREATE TABLE FoodRestaurant (
     FoodID INT,
     RestaurantID INT,
@@ -66,7 +65,7 @@ CREATE TABLE FoodRestaurant (
     FOREIGN KEY (RestaurantID) REFERENCES Restaurant(ID)
 );
 
--- RESERVATION TABLE (Combined Booking + Order)
+-- RESERVATION Table
 CREATE TABLE Reservation (
     ID INT PRIMARY KEY IDENTITY,
     CustomerID INT,
@@ -78,7 +77,7 @@ CREATE TABLE Reservation (
     FOREIGN KEY (RestaurantID) REFERENCES Restaurant(ID)
 );
 
--- RESERVATION FOOD
+-- RESERVATION FOOD Table
 CREATE TABLE ReservationFood (
     ReservationID INT,
     FoodID INT,
@@ -88,7 +87,7 @@ CREATE TABLE ReservationFood (
     FOREIGN KEY (FoodID) REFERENCES Food(ID)
 );
 
--- RESERVATION PAYMENT
+-- RESERVATION PAYMENT Table
 CREATE TABLE ReservationPayment (
     ID INT PRIMARY KEY IDENTITY,
     ReservationID INT,
@@ -99,7 +98,7 @@ CREATE TABLE ReservationPayment (
     FOREIGN KEY (ReservationID) REFERENCES Reservation(ID)
 );
 
--- ADVERTISEMENT
+-- ADVERTISEMENT Table
 CREATE TABLE Advertisement (
     ID INT PRIMARY KEY IDENTITY,
     RestaurantID INT,
@@ -166,3 +165,35 @@ CREATE TABLE FoodSuggestionHistory (
     FOREIGN KEY (UserID) REFERENCES Users(ID),
     FOREIGN KEY (FoodID) REFERENCES Food(ID)
 );
+-- Insert Users (Restaurant Owners, Admin, and Customer) with unique details
+INSERT INTO Users (UserName, Email, Password, PhoneNumber, Status) VALUES
+('restaurant_owner1', 'owner1@angi.com', 'password123', '0912345678', 'Active'),
+('restaurant_owner2', 'owner2@angi.com', 'password123', '0919876543', 'Active'),
+('restaurant_owner3', 'owner3@angi.com', 'password123', '0912345908', 'Active'),
+('restaurant_owner4', 'owner4@angi.com', 'password123', '0919876123', 'Active'),
+('admin_user', 'admin@angi.com', 'adminpassword', '0999887766', 'Active'),
+('customer_user', 'customer@angi.com', 'customerpassword', '0922334455', 'Active');
+-- Insert Roles
+INSERT INTO Role (RoleName) VALUES
+('Admin'),
+('Customer'),
+('Restaurant');
+-- Assign Roles to Users
+INSERT INTO UserRole (UserID, RoleID) VALUES
+(5, 1),  -- Admin (ID = 5)
+(6, 2),  -- Customer (ID = 6)
+(1, 3),  -- Restaurant Owner 1 (ID = 1)
+(2, 3),  -- Restaurant Owner 2 (ID = 2)
+(3, 3),  -- Restaurant Owner 1 (ID = 3)
+(4, 3);  -- Restaurant Owner 2 (ID = 4)
+-- Insert Restaurants (with unique names)
+INSERT INTO Restaurant (Name, OwnerID, Address) VALUES
+('La Maison 1888', 1, 'Bà Nà Hills, Da Nang'),  -- Owner 1
+('Madam Lan', 2, '124 Nguyen Tri Phuong, Da Nang'),  -- Owner 2
+('The Rachel', 3, '58 Tran Phu, Da Nang'),  -- Owner 1
+('Bếp 7', 4, '53 Le Duan, Da Nang');  -- Owner 2
+INSERT INTO TimeSlot (RestaurantID, StartTime, EndTime, Available) VALUES
+(1, '2025-01-15 12:00:00', '2025-01-15 14:00:00', 1),
+(1, '2025-01-15 18:00:00', '2025-01-15 20:00:00', 1),
+(2, '2025-01-15 11:30:00', '2025-01-15 13:30:00', 1),
+(2, '2025-01-15 19:00:00', '2025-01-15 21:00:00', 1);
