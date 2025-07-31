@@ -18,31 +18,49 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CustomerController {
+
+    private static final UserDao userDao = new UserDao();
+    private static final TasteDao tasteDao = new TasteDao();
+    private static final AllergyTypeDao allergyTypeDao = new AllergyTypeDao();
+    private static final CustomerDao customerDao = new CustomerDao();
+
+    private static <E> Set<E> fetchEntities(String param, HttpServletRequest req, Function<List<Long>, List<E>> fetcher) {
+        String[] values = req.getParameterValues(param);
+        if (values == null) {
+            return Collections.emptySet();
+        }
+        List<Long> ids = Arrays.stream(values)
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+        return new HashSet<>(fetcher.apply(ids));
+    }
+
+    private static User getSessionUser(HttpServletRequest req) {
+        return (User) req.getSession().getAttribute("user");
+    }
+
     @WebServlet("/customer/profile")
     public static class ProfileServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            User user = (User) req.getSession().getAttribute("user");
-            Customer customer = new CustomerDao().getById(user.getId());
+            User user = getSessionUser(req);
+            Customer customer = customerDao.getById(user.getId());
             req.setAttribute("customer", customer);
             req.getRequestDispatcher("/views/customer/profile.jsp").forward(req, resp);
         }
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            CustomerDao customerDao = new CustomerDao();
-            String firstName = req.getParameter("firstName");
-            String lastName = req.getParameter("lastName");
-            LocalDate dateOfBirth = LocalDate.parse(req.getParameter("dateOfBirth"));
-            Gender gender = Gender.valueOf(req.getParameter("gender"));
-            User user = (User) req.getSession().getAttribute("user");
+            User user = getSessionUser(req);
             Customer customer = customerDao.getById(user.getId());
-            customer.setFirstName(firstName);
-            customer.setLastName(lastName);
-            customer.setDateOfBirth(dateOfBirth);
-            customer.setGender(gender);
+            customer.setFirstName(req.getParameter("firstName"));
+            customer.setLastName(req.getParameter("lastName"));
+            customer.setDateOfBirth(LocalDate.parse(req.getParameter("dateOfBirth")));
+            customer.setGender(Gender.valueOf(req.getParameter("gender")));
             customerDao.update(customer);
             req.getSession().setAttribute("flash_success", "Cập nhật người dùng thành công.");
             resp.sendRedirect(req.getContextPath() + "/customer/profile");
@@ -53,15 +71,8 @@ public class CustomerController {
     public static class TastesServlet extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            TasteDao tasteDao = new TasteDao();
-            UserDao userDao = new UserDao();
-            User user = (User) req.getSession().getAttribute("user");
-            user = userDao.getById(user.getId());
-            List<Long> tastesIds = Optional.ofNullable(req.getParameterValues("tastes")).stream().flatMap(Arrays::stream)
-                    .map(Long::parseLong)
-                    .toList();
-            Set<Taste> tastes = new HashSet<>(tasteDao.getByIds(tastesIds));
-            user.setFavoriteTastes(tastes);
+            User user = userDao.getById(getSessionUser(req).getId());
+            user.setFavoriteTastes(fetchEntities("tastes", req, tasteDao::getByIds));
             userDao.update(user);
             req.getSession().setAttribute("user", user);
             resp.sendRedirect(req.getHeader("referer"));
@@ -72,16 +83,8 @@ public class CustomerController {
     public static class AllergiesServlet extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            AllergyTypeDao allergyTypeDao = new AllergyTypeDao();
-            UserDao userDao = new UserDao();
-            User user = (User) req.getSession().getAttribute("user");
-            user = userDao.getById(user.getId());
-            List<Long> allergies = Optional.ofNullable(req.getParameterValues("allergies")).stream().flatMap(Arrays::stream)
-                    .map(Long::parseLong)
-                    .toList();
-            System.out.println(allergies);
-            Set<AllergyType> tastes = new HashSet<>(allergyTypeDao.getByIds(allergies));
-            user.setAllergies(tastes);
+            User user = userDao.getById(getSessionUser(req).getId());
+            user.setAllergies(fetchEntities("allergies", req, allergyTypeDao::getByIds));
             userDao.update(user);
             req.getSession().setAttribute("user", user);
             resp.sendRedirect(req.getHeader("referer"));
