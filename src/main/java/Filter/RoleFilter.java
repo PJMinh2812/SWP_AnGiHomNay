@@ -10,6 +10,16 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+/*
+ * FLOW: Role-Based Access Control (RBAC)
+ * 1. Khi người dùng truy cập các đường dẫn /admin/*, /customer/*, /restaurant/*, filter này sẽ được kích hoạt.
+ * 2. Lấy thông tin user từ session.
+ * 3. Kiểm tra role của user có phù hợp với đường dẫn không (ADMIN, CUSTOMER, RESTAURANT).
+ * 4. Nếu không đúng role, chuyển hướng về trang login và báo lỗi.
+ * 5. Nếu hợp lệ, cho phép request đi tiếp vào controller.
+ *
+ * File chính: RoleFilter.java
+ */
 // Bộ lọc kiểm tra quyền truy cập dựa trên vai trò người dùng (RBAC)
 // Chỉ cho phép truy cập các đường dẫn /admin/*, /customer/*, /restaurant/* nếu user có role phù hợp
 // Nếu không đúng role, chuyển hướng về trang login và báo lỗi

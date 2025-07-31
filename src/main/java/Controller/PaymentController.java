@@ -29,6 +29,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/*
+ * FLOW: Xem báo cáo/thông tin thanh toán
+ * 1. Người dùng thực hiện thanh toán (ví dụ qua VNPay).
+ * 2. Sau khi thanh toán, VNPay redirect về endpoint /vnpay-result.
+ * 3. Controller (PaymentController) nhận các tham số trả về, kiểm tra tính hợp lệ (mã băm).
+ * 4. Tìm payment và booking tương ứng trong database.
+ * 5. Cập nhật trạng thái payment/booking (thành công/thất bại).
+ * 6. Nếu thành công, gửi email hóa đơn cho khách hàng.
+ * 7. Chuyển hướng về trang lịch sử booking cho người dùng.
+ *
+ * File chính: PaymentController.java (VNPayResultServlet)
+ */
 public class PaymentController {
     @WebServlet("/get-vnpay-url")
     public static class GetVNPayUrlServlet extends HttpServlet {

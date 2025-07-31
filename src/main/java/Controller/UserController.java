@@ -39,6 +39,32 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/*
+ * FLOW: Quản lý tài khoản (Tạo, sửa, ban/unban)
+ *
+ * Đăng ký tài khoản:
+ * 1. Người dùng truy cập trang đăng ký (/register).
+ * 2. Nhập thông tin và gửi form.
+ * 3. Controller kiểm tra hợp lệ, tạo user mới, sinh token xác thực.
+ * 4. Gửi email xác thực tài khoản.
+ * 5. Người dùng click link xác thực trong email (/verify-email?token=...).
+ * 6. Controller xác thực token, kích hoạt tài khoản.
+ *
+ * Chỉnh sửa tài khoản:
+ * 1. Người dùng truy cập trang profile hoặc admin vào trang quản lý user.
+ * 2. Nhập thông tin mới và gửi form.
+ * 3. Controller kiểm tra hợp lệ, cập nhật thông tin user (email, phone, address, ...).
+ * 4. Lưu vào database, thông báo thành công.
+ *
+ * Ban/Unban tài khoản:
+ * 1. Admin truy cập trang quản lý user.
+ * 2. Chọn user cần ban/unban, chỉnh trạng thái blocked.
+ * 3. Controller nhận request, cập nhật trường isBlocked của user.
+ * 4. Lưu vào database, thông báo thành công.
+ * 5. Nếu user bị ban, khi đăng nhập sẽ bị chặn và báo lỗi.
+ *
+ * File chính: UserController.java (RegisterServlet, VerifyServlet, UserProfile, AdminUpdateUserServlet, LoginServlet)
+ */
 public class UserController {
     @WebServlet("/login")
     public static class LoginServlet extends HttpServlet {

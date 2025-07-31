@@ -1,3 +1,14 @@
+/*
+ * FLOW: Quản lý phân loại món ăn (Food Categorization)
+ * 1. Nhà hàng đăng nhập vào hệ thống.
+ * 2. Truy cập trang quản lý món ăn (/restaurant/foods).
+ * 3. Controller lấy danh sách category, taste, allergy, food từ DB và render ra view.
+ * 4. Khi thêm/sửa món ăn, controller nhận dữ liệu từ form, tạo đối tượng Food với các category/taste/allergy liên quan.
+ * 5. Lưu món ăn vào database.
+ * 6. Người dùng tìm kiếm món ăn có thể lọc theo category, taste, allergy, price...
+ *
+ * File chính: FoodController.java
+ */
 package Controller;
 
 import Dao.*;

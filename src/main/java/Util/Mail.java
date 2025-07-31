@@ -7,6 +7,15 @@ import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
+/*
+ * FLOW: Gửi thông báo (email) cho các sự kiện đặt bàn/đơn hàng
+ * 1. Khi có sự kiện quan trọng (đặt bàn, thanh toán thành công, quên mật khẩu, đăng ký tài khoản...).
+ * 2. Controller gọi hàm gửi email (Mail.send(...)) với nội dung phù hợp.
+ * 3. Mail.java thiết lập SMTP, tạo email và gửi đi.
+ * 4. Người dùng nhận được email thông báo.
+ *
+ * File chính: Mail.java, gọi từ các controller như PaymentController, UserController...
+ */
 public class Mail {
     // Gửi email thông báo cho người dùng
     public static boolean send(String mail_to, String subject, String html) {

@@ -9,6 +9,15 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+/*
+ * FLOW: User Session Management
+ * 1. Khi người dùng truy cập các đường dẫn yêu cầu đăng nhập (/admin/*, /customer/*, /restaurant/*, ...), filter này sẽ được kích hoạt.
+ * 2. Lấy thông tin user từ session.
+ * 3. Nếu chưa đăng nhập, chuyển hướng về trang login và báo lỗi.
+ * 4. Nếu đã đăng nhập, cho phép request đi tiếp vào controller.
+ *
+ * File chính: AuthFilter.java
+ */
 // Bộ lọc xác thực người dùng đã đăng nhập (session management)
 // Nếu chưa đăng nhập, chuyển hướng về trang login
 // Nếu đã đăng nhập, cho phép request đi tiếp
