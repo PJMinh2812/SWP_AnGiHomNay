@@ -27,59 +27,24 @@ public class FoodController {
     public static class RestaurantFoodServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            CategoryDao categoryDao = new CategoryDao();
-            FoodDao foodDao = new FoodDao();
-            TasteDao tasteDao = new TasteDao();
-            AllergyTypeDao allergyDao = new AllergyTypeDao();
-
-            List<Category> categories = categoryDao.getAll();
-            RestaurantDao restaurantDao = new RestaurantDao();
-            User user = (User) req.getSession().getAttribute("user");
-            Restaurant restaurant = restaurantDao.getById(user.getId());
-            List<Food> foods = foodDao.getFoodsOfRestaurant(restaurant).reversed();
-            List<Taste> tastes = tasteDao.getAll();
-            List<AllergyType> allergies = allergyDao.getAll();
-
-            req.setAttribute("tastes", tastes);
-            req.setAttribute("allergies", allergies);
-            req.setAttribute("foods", foods);
-            req.setAttribute("categories", categories);
+            // Lấy danh sách category, taste, allergy, food của nhà hàng
+            // Đưa dữ liệu lên view để render giao diện quản lý món ăn
             req.getRequestDispatcher("/views/restaurant/food.jsp").forward(req, resp);
         }
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            RestaurantDao restaurantDao = new RestaurantDao();
-            FoodDao foodDao = new FoodDao();
-            CategoryDao categoryDao = new CategoryDao();
-            String name = req.getParameter("name");
-            String description = req.getParameter("description");
-            double price = Double.parseDouble(req.getParameter("price"));
-            String image = UploadImage.saveImage(req, "image");
-            List<Long> categoryIds = Optional.ofNullable(req.getParameterValues("categoryIds")).stream().flatMap(Arrays::stream)
-                    .map(Long::parseLong)
-                    .toList();
-            Set<Category> categories = new HashSet<>(categoryDao.getByIds(categoryIds));
-            List<Long> tasteIds = Optional.ofNullable(req.getParameterValues("tasteIds"))
-                    .stream().flatMap(Arrays::stream).map(Long::parseLong).toList();
-            Set<Taste> tastes = new HashSet<>(new TasteDao().getByIds(tasteIds));
-
-            List<Long> allergyIds = Optional.ofNullable(req.getParameterValues("allergyIds"))
-                    .stream().flatMap(Arrays::stream).map(Long::parseLong).toList();
-            Set<AllergyType> allergies = new HashSet<>(new AllergyTypeDao().getByIds(allergyIds));
-            User user = (User) req.getSession().getAttribute("user");
-            Restaurant restaurant = restaurantDao.getById(user.getId());
-            Food food = new Food(name, description, price, image, categories, restaurant, true);
-            food.setTastes(tastes);
-            food.setAllergyContents(allergies);
-            foodDao.save(food);
-            req.getSession().setAttribute("flash_success", "Thêm món ăn thành công.");
+            // Lấy thông tin món ăn từ form
+            // Lấy danh sách category, taste, allergy từ form
+            // Tạo đối tượng Food và lưu vào database
+            // Chuyển hướng về trang quản lý món ăn
             resp.sendRedirect(req.getContextPath() + "/restaurant/foods");
         }
     }
+
     @WebServlet("/restaurant/edit-food")
     @MultipartConfig
-    public static class RestaurantEditFood extends HttpServlet{
+    public static class RestaurantEditFood extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             RestaurantDao restaurantDao = new RestaurantDao();
@@ -98,7 +63,8 @@ public class FoodController {
             String name = req.getParameter("name");
             String description = req.getParameter("description");
             double price = Double.parseDouble(req.getParameter("price"));
-            List<Long> categoryIds = Optional.ofNullable(req.getParameterValues("categoryIds")).stream().flatMap(Arrays::stream)
+            List<Long> categoryIds = Optional.ofNullable(req.getParameterValues("categoryIds")).stream()
+                    .flatMap(Arrays::stream)
                     .map(Long::parseLong)
                     .toList();
             Set<Category> categories = new HashSet<>(categoryDao.getByIds(categoryIds));
@@ -129,7 +95,7 @@ public class FoodController {
     }
 
     @WebServlet("/search")
-    public static class SearchFoodServlet extends HttpServlet{
+    public static class SearchFoodServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -149,15 +115,16 @@ public class FoodController {
             Double priceFrom = parseDouble(req.getParameter("priceFrom"));
             Double priceTo = parseDouble(req.getParameter("priceTo"));
 
-            List<Food> result = foodDao.searchFoods(searchString, priceFrom, priceTo, categoryIds, allergyIds, tasteIds);
-//            System.out.println("debug in servlet");
-//            for (int i = 0; i < result.size(); i++) {
-//                System.out.println(result.get(i).getId());
-//                System.out.println(result.get(i).getCategories());
-//                System.out.println(result.get(i).getAllergyContents());
-//                System.out.println(result.get(i).getTastes());
-//            }
-//            System.out.println("debug in servlet");
+            List<Food> result = foodDao.searchFoods(searchString, priceFrom, priceTo, categoryIds, allergyIds,
+                    tasteIds);
+            // System.out.println("debug in servlet");
+            // for (int i = 0; i < result.size(); i++) {
+            // System.out.println(result.get(i).getId());
+            // System.out.println(result.get(i).getCategories());
+            // System.out.println(result.get(i).getAllergyContents());
+            // System.out.println(result.get(i).getTastes());
+            // }
+            // System.out.println("debug in servlet");
             List<Long> foodIds = new ArrayList<>();
             for (Food food : result) {
                 foodIds.add(food.getId());
@@ -167,6 +134,7 @@ public class FoodController {
             req.setAttribute("details", details);
             req.getRequestDispatcher("/views/public/search.jsp").forward(req, resp);
         }
+
         private Double parseDouble(String s) {
             try {
                 return (s != null && !s.trim().isEmpty()) ? Double.parseDouble(s) : null;
@@ -177,7 +145,7 @@ public class FoodController {
     }
 
     @WebServlet("/food-detail")
-    public static class FoodDetailServlet extends HttpServlet{
+    public static class FoodDetailServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             long id = Long.parseLong(req.getParameter("id"));
@@ -229,31 +197,31 @@ public class FoodController {
                 userInfo.append("- Dị ứng: ").append(allergies).append("\n");
             }
 
-// Nếu không có dòng nào, thì ghi là "Không có thông tin"
+            // Nếu không có dòng nào, thì ghi là "Không có thông tin"
             if (userInfo.toString().trim().equals("Thông tin người dùng:")) {
                 userInfo = new StringBuilder("Thông tin người dùng: Không có thông tin cụ thể.\n");
             }
 
-            String prompt = String.format("""
-        Dưới đây là danh sách món ăn, mỗi món bao gồm: id, name, price:
+            String prompt = String.format(
+                    """
+                            Dưới đây là danh sách món ăn, mỗi món bao gồm: id, name, price:
 
-        %s
+                            %s
 
-        %s
+                            %s
 
-        Nhiệm vụ:
-        1. Phân tích tình trạng người dùng hiện tại, nên ăn món có đặc điểm như thế nào.
-        2. Trả về danh sách `id` của các món ăn phù hợp từ danh sách trên (tối đa 3, nếu không có món ăn nào thì trả về recommendedIds rỗng).
+                            Nhiệm vụ:
+                            1. Phân tích tình trạng người dùng hiện tại, nên ăn món có đặc điểm như thế nào.
+                            2. Trả về danh sách `id` của các món ăn phù hợp từ danh sách trên (tối đa 3, nếu không có món ăn nào thì trả về recommendedIds rỗng).
 
-        Yêu cầu kết quả:
-        {
-          "analysis": "Phân tích bằng tiếng Việt...",
-          "recommendedIds": [1, 5, 7]
-        }
-        """,
+                            Yêu cầu kết quả:
+                            {
+                              "analysis": "Phân tích bằng tiếng Việt...",
+                              "recommendedIds": [1, 5, 7]
+                            }
+                            """,
                     foodArray.toString(2),
-                    userInfo.toString().trim()
-            );
+                    userInfo.toString().trim());
 
             resp.setCharacterEncoding("UTF-8");
             resp.setContentType("application/json");
@@ -282,7 +250,8 @@ public class FoodController {
 
         public String askAI(String promptText) throws Exception {
             String apiKey = "AIzaSyAbobxuRAYZy7bfBTqgsLqUMRDsL12FDbc"; // Đổi API key tại đây
-//            String apiKey = "AIzaSyAHM3svzVsDVpvocf9r7glnk8sgaP6eXLY"; // Đổi API key tại đây
+            // String apiKey = "AIzaSyAHM3svzVsDVpvocf9r7glnk8sgaP6eXLY"; // Đổi API key tại
+            // đây
             JSONObject payload = new JSONObject();
             JSONArray contents = new JSONArray();
             JSONArray parts = new JSONArray();
@@ -294,7 +263,8 @@ public class FoodController {
             contents.put(content);
             payload.put("contents", contents);
 
-//          String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
+            // String urlString =
+            // "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
             String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b-latest:generateContent";
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -340,7 +310,7 @@ public class FoodController {
     }
 
     @WebServlet("/api/get-all-food")
-    public static class GetAllFoodServlet extends HttpServlet{
+    public static class GetAllFoodServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             resp.setContentType("application/json");

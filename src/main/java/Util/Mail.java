@@ -8,7 +8,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 public class Mail {
-    public static boolean send(String mail_to,String subject, String html){
+    // Gửi email thông báo cho người dùng
+    public static boolean send(String mail_to, String subject, String html) {
+        // Thiết lập cấu hình SMTP
+        // Tạo session gửi mail
+        // Tạo nội dung email (subject, body, recipient)
+        // Gửi email qua SMTP
+        // Trả về true nếu gửi thành công, false nếu có lỗi
         System.out.println("in send mail func");
         Properties properties = new Properties();
         properties.put("mail.smtp.host", "smtp.gmail.com");

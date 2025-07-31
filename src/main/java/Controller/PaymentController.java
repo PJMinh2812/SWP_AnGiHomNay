@@ -116,7 +116,8 @@ public class PaymentController {
             } else { // thanh toán gọi thêm món
                 long amount = 0;
                 BookingDetailDao bookingDetailDao = new BookingDetailDao();
-                List<BookingDetail> bookingDetails = bookingDetailDao.getBookingDetailsByBookingIdAndFoods(booking.getId());
+                List<BookingDetail> bookingDetails = bookingDetailDao
+                        .getBookingDetailsByBookingIdAndFoods(booking.getId());
                 for (BookingDetail bookingDetail : bookingDetails) {
                     amount += (long) (bookingDetail.getFood().getPrice() * bookingDetail.getQuantity());
                 }
@@ -129,27 +130,34 @@ public class PaymentController {
     public static class VNPayResultServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Lấy thông tin booking và payment từ database
             BookingDao bookingDao = new BookingDao();
             PaymentDao paymentDao = new PaymentDao();
+
+            // Đọc các tham số trả về từ VNPay
             Map<String, String> fields = new HashMap<>();
-            for (Enumeration<?> params = req.getParameterNames(); params.hasMoreElements(); ) {
-                String fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.US_ASCII.toString());
-                String fieldValue = URLEncoder.encode(req.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
+            for (Enumeration<?> params = req.getParameterNames(); params.hasMoreElements();) {
+                // Lấy từng tham số và đưa vào fields
+                String fieldName = URLEncoder.encode((String) params.nextElement(),
+                        StandardCharsets.US_ASCII.toString());
+                String fieldValue = URLEncoder.encode(req.getParameter(fieldName),
+                        StandardCharsets.US_ASCII.toString());
                 if ((fieldValue != null) && (!fieldValue.isEmpty())) {
                     fields.put(fieldName, fieldValue);
                 }
             }
+            // Kiểm tra mã băm để xác thực dữ liệu trả về từ VNPay
             fields.remove("vnp_SecureHashType");
             fields.remove("vnp_SecureHash");
             String signValue = VNPayUtil.hashAllFields(fields);
             if (!signValue.equals(req.getParameter("vnp_SecureHash"))) {
+                // Nếu mã băm không khớp, báo lỗi và dừng lại
                 req.getSession().setAttribute("flash_error", "Mã băm không khớp");
                 resp.sendRedirect(req.getContextPath() + "/customer/bookings");
                 return;
             }
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-            SimpleDateFormat sqlFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String paid_at = req.getParameter("vnp_PayDate");
+
+            // Lấy payment theo order info, kiểm tra trạng thái
             String vnp_OrderInfo = req.getParameter("vnp_OrderInfo");
             Payment payment = paymentDao.findByOrderInfo(vnp_OrderInfo);
             if (payment == null) {
@@ -162,6 +170,7 @@ public class PaymentController {
                 resp.sendRedirect(req.getContextPath() + "/customer/bookings");
                 return;
             }
+            // ... cập nhật trạng thái booking/payment ...
             String vnp_TransactionStatus = req.getParameter("vnp_TransactionStatus");
             String vnp_TransactionNo = req.getParameter("vnp_TransactionNo");
             String vnp_BankTranNo = req.getParameter("vnp_BankTranNo");
@@ -185,6 +194,9 @@ public class PaymentController {
             bookingDao.update(booking);
             payment.setBooking(booking);
             try {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+                SimpleDateFormat sqlFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String paid_at = req.getParameter("vnp_PayDate");
                 payment.setPaid_at(Timestamp.valueOf(sqlFormatter.format(formatter.parse(paid_at))));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
@@ -195,11 +207,10 @@ public class PaymentController {
                 resp.sendRedirect(req.getContextPath() + "/customer/bookings");
                 return;
             }
+            // Nếu thanh toán thành công, gửi email hóa đơn cho khách hàng
             String email = booking.getCustomer().getUser().getEmail();
-            System.out.println("Sending to: " + email);
             String html = generateHtml(booking);
-            System.out.println(html);
-            // send mail
+            // Gửi email hóa đơn
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
                 try {
@@ -220,7 +231,8 @@ public class PaymentController {
         }
 
         private String generateHtml(Booking booking) {
-            return String.format("""
+            return String.format(
+                    """
                             <!DOCTYPE html>
                             <html>
                             <head>
@@ -232,7 +244,7 @@ public class PaymentController {
                                     <h2 style="text-align: center; color: #28a745;">Booking Details</h2>
                                     <p style="text-align: center;">Full information of your reservation</p>
                                     <hr>
-                            
+
                                     <h3>Booking ID: %d</h3>
                                     <p><strong>Status:</strong> %s</p>
                                     <p><strong>Table:</strong> %s</p>
@@ -241,17 +253,17 @@ public class PaymentController {
                                     <p><strong>Note:</strong> %s</p>
                                     <p><strong>Prepaid:</strong> %,.0f VND</p>
                                     <p><strong>Total:</strong> %,.0f VND</p>
-                            
+
                                     <hr>
                                     <h4 style="color: #007bff;">Payments</h4>
                                     %s
-                            
+
                                     <hr>
                                     <h4 style="color: #28a745;">Order Details</h4>
                                     <ul style="padding-left: 20px;">
                                         %s
                                     </ul>
-                            
+
                                     <hr>
                                     <p style="text-align: center;">Thank you for your reservation!</p>
                                 </div>
@@ -267,8 +279,7 @@ public class PaymentController {
                     booking.getPrePaidFee(),
                     booking.getAmount(),
                     generatePaymentHtml(booking.getPayments()),
-                    generateOrderDetailHtml(booking.getBookingDetails())
-            );
+                    generateOrderDetailHtml(booking.getBookingDetails()));
         }
 
         private String generatePaymentHtml(List<Payment> payments) {
@@ -278,7 +289,8 @@ public class PaymentController {
 
             StringBuilder sb = new StringBuilder();
             for (Payment p : payments) {
-                sb.append(String.format("""
+                sb.append(String.format(
+                        """
                                     <div style="border: 1px solid #ddd; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
                                         <p><strong>Type:</strong> %s</p>
                                         <p><strong>Amount:</strong> %d VND</p>
@@ -291,8 +303,7 @@ public class PaymentController {
                         p.getAmount(),
                         p.getBankCode(),
                         p.getTransactionStatus(),
-                        p.getPaid_at()
-                ));
+                        p.getPaid_at()));
             }
             return sb.toString();
         }
@@ -308,8 +319,7 @@ public class PaymentController {
                         "<li>%s x%d - %,.0f VND</li>",
                         d.getFood().getName(),
                         d.getQuantity(),
-                        d.getPrice()
-                ));
+                        d.getPrice()));
             }
             return sb.toString();
         }

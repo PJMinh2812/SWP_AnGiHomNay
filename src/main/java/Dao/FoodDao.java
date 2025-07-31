@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+
 public class FoodDao extends GenericDao<Food> {
     public List<Food> getFoodsOfRestaurant(Restaurant restaurant) {
         List<Food> foods = entityManager.createQuery(

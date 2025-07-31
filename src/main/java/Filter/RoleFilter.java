@@ -10,26 +10,35 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/admin/*", "/customer/*", "/restaurant/*"})
+// Bộ lọc kiểm tra quyền truy cập dựa trên vai trò người dùng (RBAC)
+// Chỉ cho phép truy cập các đường dẫn /admin/*, /customer/*, /restaurant/* nếu user có role phù hợp
+// Nếu không đúng role, chuyển hướng về trang login và báo lỗi
+@WebFilter(urlPatterns = { "/admin/*", "/customer/*", "/restaurant/*" })
 public class RoleFilter implements Filter {
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        // Ép kiểu request/response về HTTP
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
+        // Lấy session hiện tại (nếu có)
         HttpSession session = req.getSession(false);
 
+        // Lấy thông tin user từ session
         User user = (session != null) ? (User) session.getAttribute("user") : null;
 
+        // Nếu chưa đăng nhập, chuyển hướng về trang login (AuthFilter sẽ xử lý chính)
         if (user == null) {
-            // Phòng hờ, nhưng AuthFilter sẽ bắt trường hợp này
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
+        // Lấy đường dẫn và vai trò user
         String uri = req.getRequestURI();
         Role role = user.getRole();
 
-        // Kiểm tra role với đường dẫn
+        // Kiểm tra quyền truy cập: nếu không đúng role với đường dẫn thì báo lỗi và
+        // chuyển hướng
         if (uri.startsWith(req.getContextPath() + "/admin") && role != Role.ADMIN
                 || uri.startsWith(req.getContextPath() + "/customer") && role != Role.CUSTOMER
                 || uri.startsWith(req.getContextPath() + "/restaurant") && role != Role.RESTAURANT) {
@@ -38,6 +47,7 @@ public class RoleFilter implements Filter {
             return;
         }
 
+        // Nếu hợp lệ, cho phép request đi tiếp
         filterChain.doFilter(request, response);
     }
 }

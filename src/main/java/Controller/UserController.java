@@ -62,12 +62,12 @@ public class UserController {
                 resp.sendRedirect(req.getContextPath() + "/login");
                 return;
             }
-            if (!user.isVerified()){
+            if (!user.isVerified()) {
                 req.getSession().setAttribute("flash_error", "Tài khoản chưa được kích hoạt.");
                 resp.sendRedirect(req.getContextPath() + "/login");
                 return;
             }
-            if (user.isBlocked()){
+            if (user.isBlocked()) {
                 req.getSession().setAttribute("flash_error", "Tài khoản đã bị khóa.");
                 resp.sendRedirect(req.getContextPath() + "/login");
                 return;
@@ -99,6 +99,7 @@ public class UserController {
             resp.sendRedirect(req.getContextPath() + "/");
         }
     }
+
     @WebServlet("/register")
     public static class RegisterServlet extends HttpServlet {
         @Override
@@ -108,6 +109,10 @@ public class UserController {
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Kiểm tra hợp lệ dữ liệu (email, phone, password)
+            // Gửi email xác thực tài khoản
+            // Lưu user và customer vào database
+            // Thông báo thành công và chuyển hướng về login
             UserDao userDao = new UserDao();
             CustomerDao customerDao = new CustomerDao();
             String password = req.getParameter("password");
@@ -118,13 +123,13 @@ public class UserController {
                 return;
             }
             String email = req.getParameter("email");
-            if (userDao.findByEmail(email)!=null) {
+            if (userDao.findByEmail(email) != null) {
                 req.getSession().setAttribute("flash_error", "Email đã được sử dụng.");
                 resp.sendRedirect(req.getContextPath() + "/login");
                 return;
             }
             String phone = req.getParameter("phone");
-            if (userDao.findByPhone(phone)!=null) {
+            if (userDao.findByPhone(phone) != null) {
                 req.getSession().setAttribute("flash_error", "Số điện thoại đã được sử dụng.");
                 resp.sendRedirect(req.getContextPath() + "/login");
                 return;
@@ -135,7 +140,8 @@ public class UserController {
             executorService.submit(() -> {
                 try {
                     String url = Config.app_url + req.getContextPath() + "/verify-email?token=" + token;
-                    String html = "Chúc mừng bạn đã đăng kí thành công, vui lòng nhấn vào <a href='url'>đây</a> để xác thực email của bạn.".replace("url", url);
+                    String html = "Chúc mừng bạn đã đăng kí thành công, vui lòng nhấn vào <a href='url'>đây</a> để xác thực email của bạn."
+                            .replace("url", url);
                     Mail.send(email, "Đăng kí tài khoản", html);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -144,7 +150,8 @@ public class UserController {
             executorService.shutdown();
             // end send mail
             String address = req.getParameter("address");
-            User user = new User(email, BCrypt.hashpw(password, BCrypt.gensalt()), "/assets/img/default-avatar.jpg", phone, address, token, false, false, Role.CUSTOMER);
+            User user = new User(email, BCrypt.hashpw(password, BCrypt.gensalt()), "/assets/img/default-avatar.jpg",
+                    phone, address, token, false, false, Role.CUSTOMER);
             userDao.save(user);
             String firstName = req.getParameter("firstName");
             String lastName = req.getParameter("lastName");
@@ -156,6 +163,7 @@ public class UserController {
             resp.sendRedirect(req.getContextPath() + "/login");
         }
     }
+
     @WebServlet("/verify-email")
     public static class VerifyServlet extends HttpServlet {
         @Override
@@ -173,6 +181,7 @@ public class UserController {
             resp.sendRedirect(req.getContextPath() + "/login");
         }
     }
+
     @WebServlet("/logout")
     public static class LogoutServlet extends HttpServlet {
         @Override
@@ -187,6 +196,7 @@ public class UserController {
             resp.sendRedirect(req.getContextPath() + "/login");
         }
     }
+
     @WebServlet("/forgot-password")
     public static class ForgotPassword extends HttpServlet {
         @Override
@@ -207,7 +217,8 @@ public class UserController {
                 executorService.submit(() -> {
                     try {
                         String url = Config.app_url + req.getContextPath() + "/reset-password?token=" + uuid;
-                        String html = "Vui lòng nhấn vào <a href='url'>đây</a> để lấy lại mật khẩu của bạn.".replace("url", url);
+                        String html = "Vui lòng nhấn vào <a href='url'>đây</a> để lấy lại mật khẩu của bạn."
+                                .replace("url", url);
                         Mail.send(email, "Lấy lại mật khẩu", html);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
@@ -220,6 +231,7 @@ public class UserController {
             resp.sendRedirect(req.getHeader("referer"));
         }
     }
+
     @WebServlet("/reset-password")
     public static class ResetPassword extends HttpServlet {
         @Override
@@ -249,8 +261,9 @@ public class UserController {
             }
         }
     }
+
     @WebServlet("/admin/user")
-    public static class AdminUserServlet extends HttpServlet{
+    public static class AdminUserServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             UserDao userDao = new UserDao();
@@ -265,25 +278,29 @@ public class UserController {
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Kiểm tra hợp lệ dữ liệu
+            // Lưu user, customer/restaurant vào database
+            // Thông báo thành công và chuyển hướng về trang quản lý user
             UserDao userDao = new UserDao();
             String password = req.getParameter("password");
             String email = req.getParameter("email");
             String phone = req.getParameter("phone");
             Role role = Role.valueOf(req.getParameter("role"));
             String address = req.getParameter("address");
-            if (userDao.findByEmail(email)!=null) {
+            if (userDao.findByEmail(email) != null) {
                 req.getSession().setAttribute("flash_error", "Email đã được sử dụng.");
                 resp.sendRedirect(req.getContextPath() + "/admin/user");
                 return;
             }
-            if (userDao.findByPhone(phone)!=null) {
+            if (userDao.findByPhone(phone) != null) {
                 req.getSession().setAttribute("flash_error", "Số điện thoại đã được sử dụng.");
                 resp.sendRedirect(req.getContextPath() + "/admin/user");
                 return;
             }
-            User user = new User(email, BCrypt.hashpw(password, BCrypt.gensalt()), "/assets/img/default-avatar.jpg", phone, address, null, true, false, role);
+            User user = new User(email, BCrypt.hashpw(password, BCrypt.gensalt()), "/assets/img/default-avatar.jpg",
+                    phone, address, null, true, false, role);
             userDao.save(user);
-            if (role == Role.CUSTOMER){
+            if (role == Role.CUSTOMER) {
                 CustomerDao customerDao = new CustomerDao();
                 String firstName = req.getParameter("firstName");
                 String lastName = req.getParameter("lastName");
@@ -292,7 +309,7 @@ public class UserController {
                 Customer customer = new Customer(user, firstName, lastName, dob, gender);
                 customerDao.save(customer);
             }
-            if (role == Role.RESTAURANT){
+            if (role == Role.RESTAURANT) {
                 RestaurantDao restaurantDao = new RestaurantDao();
                 String name = req.getParameter("name");
                 String mapEmbedUrl = req.getParameter("mapEmbedUrl");
@@ -310,10 +327,16 @@ public class UserController {
             resp.sendRedirect(req.getContextPath() + "/admin/user");
         }
     }
+
     @WebServlet("/admin/update-user")
     public static class AdminUpdateUserServlet extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Lấy user theo id, kiểm tra tồn tại
+            // Kiểm tra trùng email/phone
+            // Cập nhật thông tin user (bao gồm trạng thái isBlocked để ban/unban)
+            // Nếu là customer/restaurant thì cập nhật thông tin liên quan
+            // Thông báo thành công và chuyển hướng về trang quản lý user
             long id = Long.parseLong(req.getParameter("id"));
             UserDao userDao = new UserDao();
             User user = userDao.getById(id);
@@ -324,12 +347,12 @@ public class UserController {
             }
             String email = req.getParameter("email");
             String phone = req.getParameter("phone");
-            if (userDao.findByEmailExcept(email, user.getId())!=null) {
+            if (userDao.findByEmailExcept(email, user.getId()) != null) {
                 req.getSession().setAttribute("flash_error", "Email đã được sử dụng bởi tài khoản khác.");
                 resp.sendRedirect(req.getContextPath() + "/admin/user");
                 return;
             }
-            if (userDao.findByPhoneExcept(phone, user.getId())!=null) {
+            if (userDao.findByPhoneExcept(phone, user.getId()) != null) {
                 req.getSession().setAttribute("flash_error", "Số điện thoại đã được sử dụng bởi tài khoản khác.");
                 resp.sendRedirect(req.getContextPath() + "/admin/user");
                 return;
@@ -341,7 +364,7 @@ public class UserController {
             user.setBlocked(isBlocked);
             user.setAddress(address);
             userDao.update(user);
-            if (user.getRole() == Role.CUSTOMER){
+            if (user.getRole() == Role.CUSTOMER) {
                 CustomerDao customerDao = new CustomerDao();
                 String firstName = req.getParameter("firstName");
                 String lastName = req.getParameter("lastName");
@@ -354,7 +377,7 @@ public class UserController {
                 customer.setGender(gender);
                 customerDao.update(customer);
             }
-            if (user.getRole() == Role.RESTAURANT){
+            if (user.getRole() == Role.RESTAURANT) {
                 RestaurantDao restaurantDao = new RestaurantDao();
                 String name = req.getParameter("name");
                 String mapEmbedUrl = req.getParameter("mapEmbedUrl");
@@ -371,6 +394,7 @@ public class UserController {
             resp.sendRedirect(req.getContextPath() + "/admin/user");
         }
     }
+
     @WebServlet("/change-password")
     public static class ChangePasswordServlet extends HttpServlet {
         @Override
@@ -396,6 +420,7 @@ public class UserController {
             resp.sendRedirect(req.getHeader("referer"));
         }
     }
+
     @WebServlet("/update-avatar")
     @MultipartConfig
     public static class UpdateAvatarServlet extends HttpServlet {
@@ -407,15 +432,16 @@ public class UserController {
                 user.setAvatar(filename);
                 new UserDao().update(user);
                 req.getSession().setAttribute("user", user);
-            } catch (ServletException e){
+            } catch (ServletException e) {
                 e.printStackTrace();
                 req.getSession().setAttribute("warning", "File tải lên phải là 1 ảnh");
             }
             resp.sendRedirect(req.getHeader("referer"));
         }
     }
+
     @WebServlet("/google/oauth")
-    public static class GoogleOauthServlet extends HttpServlet{
+    public static class GoogleOauthServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             GoogleAuthorizationCodeFlow googleAuthorizationCodeFlow = new GoogleAuthorizationCodeFlow.Builder(
@@ -423,16 +449,16 @@ public class UserController {
                     new JacksonFactory(),
                     Config.google_oauth_client_id,
                     Config.google_oauth_client_secret,
-                    Arrays.asList("openid", "profile", "email")
-            ).build();
+                    Arrays.asList("openid", "profile", "email")).build();
             String loginUrl = googleAuthorizationCodeFlow.newAuthorizationUrl()
                     .setRedirectUri(new Config().google_oauth_redirect_uri)
                     .build();
             resp.sendRedirect(loginUrl);
         }
     }
+
     @WebServlet("/login-google")
-    public static class LoginGoogle extends HttpServlet{
+    public static class LoginGoogle extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             String authorizationCode = req.getParameter("code");
@@ -444,8 +470,7 @@ public class UserController {
                     Config.google_oauth_client_id,
                     Config.google_oauth_client_secret,
                     authorizationCode,
-                    new Config().google_oauth_redirect_uri
-            ).execute();
+                    new Config().google_oauth_redirect_uri).execute();
             GoogleIdToken googleIdToken = googleTokenResponse.parseIdToken();
             GoogleIdToken.Payload payload = googleIdToken.getPayload();
             String email = payload.getEmail();
@@ -464,6 +489,7 @@ public class UserController {
             }
         }
     }
+
     @WebServlet("/add-more-info")
     public static class AddMoreInfoServlet extends HttpServlet {
         @Override
@@ -517,10 +543,14 @@ public class UserController {
             resp.sendRedirect(req.getContextPath() + "/");
         }
     }
+
     @WebServlet("/user/profile")
-    public static class UserProfile extends HttpServlet{
+    public static class UserProfile extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Kiểm tra trùng email/phone
+            // Cập nhật thông tin user
+            // Thông báo thành công và chuyển hướng về trang profile
             String email = req.getParameter("email");
             String phone = req.getParameter("phone");
             String address = req.getParameter("address");
