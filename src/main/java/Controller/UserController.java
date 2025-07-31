@@ -88,14 +88,7 @@ public class UserController {
                 cookie.setPath(req.getContextPath());
                 resp.addCookie(cookie);
             }
-            if (user.getRole() == Role.RESTAURANT) {
-                resp.sendRedirect(req.getContextPath() + "/views/restaurant/revenue.jsp");
-                return;
-            }
-            if (user.getRole() == Role.ADMIN) {
-                resp.sendRedirect(req.getContextPath() + "/views/admin/revenue.jsp");
-                return;
-            }
+
             resp.sendRedirect(req.getContextPath() + "/");
         }
     }
@@ -109,10 +102,6 @@ public class UserController {
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            // Kiểm tra hợp lệ dữ liệu (email, phone, password)
-            // Gửi email xác thực tài khoản
-            // Lưu user và customer vào database
-            // Thông báo thành công và chuyển hướng về login
             UserDao userDao = new UserDao();
             CustomerDao customerDao = new CustomerDao();
             String password = req.getParameter("password");
@@ -278,9 +267,6 @@ public class UserController {
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            // Kiểm tra hợp lệ dữ liệu
-            // Lưu user, customer/restaurant vào database
-            // Thông báo thành công và chuyển hướng về trang quản lý user
             UserDao userDao = new UserDao();
             String password = req.getParameter("password");
             String email = req.getParameter("email");
@@ -332,11 +318,6 @@ public class UserController {
     public static class AdminUpdateUserServlet extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            // Lấy user theo id, kiểm tra tồn tại
-            // Kiểm tra trùng email/phone
-            // Cập nhật thông tin user (bao gồm trạng thái isBlocked để ban/unban)
-            // Nếu là customer/restaurant thì cập nhật thông tin liên quan
-            // Thông báo thành công và chuyển hướng về trang quản lý user
             long id = Long.parseLong(req.getParameter("id"));
             UserDao userDao = new UserDao();
             User user = userDao.getById(id);
@@ -427,15 +408,20 @@ public class UserController {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             try {
+                // 1. Lưu file ảnh lên server
                 String filename = UploadImage.saveImage(req, "avatar");
+                // 2. Lấy user hiện tại từ session
                 User user = (User) req.getSession().getAttribute("user");
+                // 3. Cập nhật đường dẫn ảnh vào user
                 user.setAvatar(filename);
+                // 4. Lưu user xuống database
                 new UserDao().update(user);
+                // 5. Cập nhật lại user trong session
                 req.getSession().setAttribute("user", user);
             } catch (ServletException e) {
-                e.printStackTrace();
                 req.getSession().setAttribute("warning", "File tải lên phải là 1 ảnh");
             }
+            // 6. Redirect về trang trước
             resp.sendRedirect(req.getHeader("referer"));
         }
     }
@@ -548,9 +534,6 @@ public class UserController {
     public static class UserProfile extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            // Kiểm tra trùng email/phone
-            // Cập nhật thông tin user
-            // Thông báo thành công và chuyển hướng về trang profile
             String email = req.getParameter("email");
             String phone = req.getParameter("phone");
             String address = req.getParameter("address");
