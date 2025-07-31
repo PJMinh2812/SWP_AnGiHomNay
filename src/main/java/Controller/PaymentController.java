@@ -170,7 +170,7 @@ public class PaymentController {
                 resp.sendRedirect(req.getContextPath() + "/customer/bookings");
                 return;
             }
-            // ... cập nhật trạng thái booking/payment ...
+            // Cập nhật trạng thái booking/payment
             String vnp_TransactionStatus = req.getParameter("vnp_TransactionStatus");
             String vnp_TransactionNo = req.getParameter("vnp_TransactionNo");
             String vnp_BankTranNo = req.getParameter("vnp_BankTranNo");

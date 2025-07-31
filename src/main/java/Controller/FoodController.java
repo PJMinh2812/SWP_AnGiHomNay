@@ -98,6 +98,9 @@ public class FoodController {
     public static class SearchFoodServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Lấy các tham số tìm kiếm từ form
+            // Tìm kiếm món ăn theo keyword, category, allergy, taste, price
+            // Đưa kết quả tìm kiếm và review lên view
 
             boolean hasParams = req.getParameterMap().keySet().stream()
                     .anyMatch(key -> req.getParameter(key) != null && !req.getParameter(key).trim().isEmpty());
@@ -148,6 +151,9 @@ public class FoodController {
     public static class FoodDetailServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Lấy id món ăn từ request
+            // Lấy thông tin món ăn và review từ database
+            // Đưa dữ liệu lên view chi tiết món ăn
             long id = Long.parseLong(req.getParameter("id"));
             FoodDao foodDao = new FoodDao();
             ReviewDetailDao reviewDetailDao = new ReviewDetailDao();
