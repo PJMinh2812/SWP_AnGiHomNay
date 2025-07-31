@@ -1,94 +1,65 @@
-package model;
+package Model;
 
-import java.sql.Timestamp;
+import Model.Constant.Role;
+import Util.Config;
+import jakarta.persistence.*;
+import lombok.*;
 
-public class User {
+import java.util.List;
 
-    private int id;
-    private String userName;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@Entity
+@Table(name = "users")
+public class User extends DistributedEntity {
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
-    private String phoneNumber;
-    private String status;
-    private java.sql.Timestamp createdAt;
-    private String role;
+    private String avatar;
+    @Column(unique = true, nullable = false)
+    private String phone;
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
+    private String address;
+    private String token;
+    @ManyToMany
+    @JoinTable(
+            name = "user_allergy",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "allergy_id")
+    )
+    private List<AllergyType> allergies;
+    @ManyToMany
+    @JoinTable(
+            name = "user_taste",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "taste_id")
+    )
+    private List<Taste> favoriteTastes;
+    private boolean isVerified;
+    private boolean isBlocked;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    // Constructors
-    public User() {
+    public String getAvatar(){
+        if (this.avatar.startsWith("http")){
+            return this.avatar;
+        } else {
+            return Config.app_url + Config.contextPath + this.avatar;
+        }
     }
 
-    public User(int id, String userName, String email, String password, String phoneNumber, String status, java.sql.Timestamp createdAt) {
-        this.id = id;
-        this.userName = userName;
+    public User(String email, String password, String avatar, String phone, String address, String token, boolean isVerified, boolean isBlocked, Role role) {
         this.email = email;
         this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
+        this.avatar = avatar;
+        this.phone = phone;
+        this.address = address;
+        this.token = token;
+        this.isVerified = isVerified;
+        this.isBlocked = isBlocked;
         this.role = role;
     }
-    
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
 }
